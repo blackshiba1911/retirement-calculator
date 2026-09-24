@@ -6,8 +6,6 @@
   <title>台灣跨職域退休金與全方位缺口精算系統</title>
   <!-- Chart.js 圖表引擎 -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- html2pdf.js PDF 匯出引擎 -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     :root {
       --primary: #1e3a8a;
@@ -25,12 +23,19 @@
     body { background-color: var(--bg); color: var(--text); padding: 24px 16px; }
     .container { max-width: 1180px; margin: 0 auto; }
     
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+    header { margin-bottom: 20px; }
     header h1 { font-size: 1.75rem; color: var(--primary); }
     header p { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
-    
-    .btn-pdf { background: #059669; color: #ffffff; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: background 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .btn-pdf:hover { background: #047857; }
+
+    /* 官方查詢專區連結卡片（二合一） */
+    .portal-section { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; }
+    .portal-title { font-size: 0.95rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .portal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 680px) { .portal-grid { grid-template-columns: 1fr; } }
+    .portal-btn { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 16px; text-decoration: none; color: var(--text); transition: all 0.2s ease; }
+    .portal-btn:hover { border-color: var(--secondary); background: #f0f9ff; transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .portal-btn-title { font-size: 0.95rem; font-weight: 700; color: var(--secondary); display: flex; align-items: center; gap: 6px; }
+    .portal-btn-desc { font-size: 0.78rem; color: var(--muted); margin-top: 5px; line-height: 1.4; }
 
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     @media (max-width: 960px) { .grid { grid-template-columns: 1fr; } }
@@ -65,24 +70,32 @@
     .scenario-desc { font-size: 0.72rem; color: var(--muted); }
 
     .rule-note { font-size: 0.78rem; background: #fffbeb; border-left: 4px solid var(--accent); padding: 8px 12px; margin-top: 10px; border-radius: 0 4px 4px 0; color: #92400e; line-height: 1.5; }
-
-    @media print {
-      body { background: #ffffff; padding: 0; }
-      .no-print { display: none !important; }
-      .card { box-shadow: none; border: 1px solid #cbd5e1; }
-    }
   </style>
 </head>
 <body>
 
-<div class="container" id="reportContent">
+<div class="container">
   <header>
-    <div>
-      <h1>台灣跨職域退休金與全方位缺口精算系統</h1>
-      <p>涵蓋三軌年資審核、長照醫療與旅遊專項儲備、定期定額複利規劃</p>
-    </div>
-    <button class="btn-pdf no-print" onclick="exportPDF()">📄 匯出 PDF 建議書報告</button>
+    <h1>台灣跨職域退休金與全方位缺口精算系統</h1>
+    <p>涵蓋三軌年資審核、長照醫療與旅遊專項儲備、定期定額複利規劃</p>
   </header>
+
+  <!-- 官方個人查詢快捷入口（雙軌整併版） -->
+  <div class="portal-section">
+    <div class="portal-title">
+      <span>🏛️ 官方個人年資與退休帳戶快速查詢（支援行動電話認證、健保卡或自然人憑證）</span>
+    </div>
+    <div class="portal-grid">
+      <a href="https://edesk.bli.gov.tw/na/" target="_blank" rel="noopener noreferrer" class="portal-btn">
+        <div class="portal-btn-title">🔍 勞動部勞保局 e 化服務系統（個人登入）</div>
+        <div class="portal-btn-desc">一站式整合查詢：勞保個人投保年資與薪資級距、勞退新制個人專戶累積金額（含雇主提繳與自提收益）、國民年金納保紀錄。</div>
+      </a>
+      <a href="https://iocs.mocs.gov.tw/portal/index.aspx" target="_blank" rel="noopener noreferrer" class="portal-btn">
+        <div class="portal-btn-title">🎓 公教人員退休撫卹與公保查詢專區</div>
+        <div class="portal-btn-desc">銓敘部網路作業與公保專區：查詢公教人員退撫年資、保留年資資格、公教人員保險（公保）養老給付試算。</div>
+      </a>
+    </div>
+  </div>
 
   <div class="grid">
     <!-- 左欄：參數輸入區 -->
@@ -336,7 +349,7 @@
   });
 
   function calculateAll() {
-    // 讀取輸入數值
+    // 讀取年齡數值
     const curAge = parseFloat(document.getElementById('curAge').value) || 38;
     const retAge = parseFloat(document.getElementById('retAge').value) || 65;
     const lifeExp = parseFloat(document.getElementById('lifeExp').value) || 85;
@@ -345,7 +358,7 @@
     const yearsInRetire = Math.max(1, lifeExp - retAge);
 
     document.getElementById('ageSummaryHint').innerText = 
-      `距離退休尚有 ${yearsToInvest} 年；退休後生活規劃 ${yearsInRetire} 年（${retAge} 歲至 ${lifeExp} 歲）。`;
+      `距退休尚有 ${yearsToInvest} 年；退休後生活規劃 ${yearsInRetire} 年（${retAge} 歲至 ${lifeExp} 歲）。`;
     document.getElementById('yearsToInvestBadge').innerText = `投入期：${yearsToInvest} 年`;
 
     const yGov = parseFloat(document.getElementById('yearsGov').value) || 0;
@@ -429,7 +442,7 @@
     const capMed = medFixed;
     const totalGapCapital = capDailyGap + capTour + capLTC + capMed;
 
-    // 更新畫面文字
+    // 更新數值顯示
     document.getElementById('valGovPen').innerText = formatMoney(govPenMonthly);
     document.getElementById('valGovIns').innerText = formatMoney(govInsMonthly);
     document.getElementById('valLabIns').innerText = formatMoney(labInsMonthly);
@@ -463,7 +476,7 @@
     document.getElementById('customRateDisplay').innerText = (customRate * 100).toFixed(1) + '%';
     document.getElementById('customPmtDisplay').innerText = formatMoney(calcPMT(totalGapCapital, customRate, yearsToInvest)) + ' /月';
 
-    // 審核清單日誌
+    // 審核日誌清單
     document.getElementById('qualCheckList').innerHTML = qualLogs.map(item => `<div>${item}</div>`).join('');
 
     // 更新圓餅圖
@@ -509,32 +522,18 @@
     const retAge = parseFloat(document.getElementById('retAge').value) || 65;
     const yearsToInvest = Math.max(1, retAge - curAge);
     
-    // 重新計算目前總資本缺口
     const totalGap = parseFloat(document.getElementById('valTotalGapCapital').innerText.replace(/[$,]/g, '')) || 0;
     document.getElementById('customPmtDisplay').innerText = formatMoney(calcPMT(totalGap, rate, yearsToInvest)) + ' /月';
   });
 
-  // 監聽所有 input、select 變更即時計算
+  // 監聽所有表單異動
   document.querySelectorAll('input, select').forEach(el => {
     if (el.id !== 'customRateSlider') {
       el.addEventListener('input', calculateAll);
     }
   });
 
-  // PDF 匯出函數
-  function exportPDF() {
-    const element = document.getElementById('reportContent');
-    const opt = {
-      margin: 8,
-      filename: '退休財務與缺口精算建議書_' + new Date().toISOString().slice(0,10) + '.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-    html2pdf().set(opt).from(element).save();
-  }
-
-  // 頁面載入完成立即執行
+  // 頁面載入自動計算
   window.addEventListener('DOMContentLoaded', calculateAll);
 </script>
 
