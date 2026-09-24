@@ -62,11 +62,32 @@
     .gap-red { color: var(--danger); }
     .gap-green { color: var(--success); }
 
+    /* 可點選切換的情境卡片樣式 */
     .scenarios-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
     @media (max-width: 600px) { .scenarios-grid { grid-template-columns: 1fr 1fr; } }
-    .scenario-box { background: #ffffff; border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
-    .scenario-rate { font-size: 0.8rem; font-weight: 700; color: var(--secondary); }
-    .scenario-val { font-size: 1.15rem; font-weight: 800; color: var(--text); margin: 4px 0; }
+    
+    .scenario-box { 
+      background: #ffffff; 
+      border: 2px solid var(--border); 
+      border-radius: 10px; 
+      padding: 12px; 
+      text-align: center; 
+      cursor: pointer; 
+      transition: all 0.2s ease; 
+      user-select: none;
+    }
+    .scenario-box:hover { 
+      border-color: var(--secondary); 
+      transform: translateY(-2px); 
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+    }
+    .scenario-box.active { 
+      border-color: var(--secondary); 
+      background: #eff6ff; 
+      box-shadow: 0 0 0 2px rgba(2,132,199,0.25); 
+    }
+    .scenario-rate { font-size: 0.82rem; font-weight: 700; color: var(--secondary); }
+    .scenario-val { font-size: 1.15rem; font-weight: 800; color: var(--text); margin: 5px 0; }
     .scenario-desc { font-size: 0.72rem; color: var(--muted); }
 
     .rule-note { font-size: 0.78rem; background: #fffbeb; border-left: 4px solid var(--accent); padding: 8px 12px; margin-top: 10px; border-radius: 0 4px 4px 0; color: #92400e; line-height: 1.5; }
@@ -273,32 +294,32 @@
         </div>
       </div>
 
-      <!-- 定期定額試算 -->
+      <!-- 定期定額試算（可點選切換情境） -->
       <div class="card">
         <div class="card-title">
           <span>退休前每月定期定額投入試算</span>
           <span style="font-size: 0.8rem; color: var(--secondary);" id="yearsToInvestBadge">投入期：27 年</span>
         </div>
         <div style="font-size: 0.86rem; color: var(--muted); margin-bottom: 10px;">
-          若欲於退休前補足上述總資本缺口，不同年化報酬率下每月需定期定額金額：
+          點選以下情境卡片或拖曳下方滑桿，即刻套用年化報酬率試算：
         </div>
         <div class="scenarios-grid">
-          <div class="scenario-box">
+          <div class="scenario-box" id="box0" onclick="applyRate(0)">
             <div class="scenario-rate">0% 純儲蓄</div>
             <div class="scenario-val" id="pmt0">$0</div>
             <div class="scenario-desc">無複利純存錢</div>
           </div>
-          <div class="scenario-box">
+          <div class="scenario-box" id="box3" onclick="applyRate(3)">
             <div class="scenario-rate">3% 保守配置</div>
             <div class="scenario-val" id="pmt3">$0</div>
             <div class="scenario-desc">定存/儲蓄險</div>
           </div>
-          <div class="scenario-box" style="border: 2px solid var(--secondary); background: #f0f9ff;">
+          <div class="scenario-box" id="box5" onclick="applyRate(5)">
             <div class="scenario-rate">5% 穩健股債</div>
-            <div class="scenario-val" id="pmt5" style="color: var(--secondary);">$0</div>
+            <div class="scenario-val" id="pmt5">$0</div>
             <div class="scenario-desc">平衡型配置</div>
           </div>
-          <div class="scenario-box">
+          <div class="scenario-box" id="box7" onclick="applyRate(7)">
             <div class="scenario-rate">7% 指數投資</div>
             <div class="scenario-val" id="pmt7">$0</div>
             <div class="scenario-desc">市值型 ETF</div>
@@ -306,12 +327,12 @@
         </div>
 
         <!-- 自選報酬率滑桿 -->
-        <div style="margin-top: 16px; background: #f8fafc; padding: 12px; border-radius: 8px;">
-          <div style="display: flex; justify-content: space-between; font-size: 0.88rem; font-weight: 600;">
-            <span>自訂年化報酬率：<strong id="customRateDisplay" style="color: var(--secondary);">6.0%</strong></span>
-            <span>每月需投入：<strong id="customPmtDisplay" style="color: var(--danger); font-size: 1.05rem;">$0</strong></span>
+        <div style="margin-top: 16px; background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid var(--border);">
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; font-weight: 600;">
+            <span>設定年化報酬率：<strong id="customRateDisplay" style="color: var(--secondary); font-size: 1rem;">6.0%</strong></span>
+            <span>每月需定期定額：<strong id="customPmtDisplay" style="color: var(--danger); font-size: 1.15rem;">$0</strong></span>
           </div>
-          <input type="range" id="customRateSlider" min="1" max="12" step="0.5" value="6" style="width: 100%; margin-top: 8px;" />
+          <input type="range" id="customRateSlider" min="0" max="12" step="0.5" value="6" style="width: 100%; margin-top: 10px; cursor: pointer;" />
         </div>
 
         <div class="rule-note">
@@ -336,6 +357,37 @@
     if (annualRate === 0) return targetFV / n;
     const r = annualRate / 12;
     return targetFV * (r / (Math.pow(1 + r, n) - 1));
+  }
+
+  // 點擊上方四大情境卡片直接套用
+  function applyRate(rate) {
+    const slider = document.getElementById('customRateSlider');
+    slider.value = rate;
+    updateCustomRateDisplay(rate);
+  }
+
+  // 更新自訂利率顯示與卡片高亮狀態
+  function updateCustomRateDisplay(rate) {
+    document.getElementById('customRateDisplay').innerText = rate.toFixed(1) + '%';
+    
+    // 更新卡片選中 active 樣式
+    [0, 3, 5, 7].forEach(r => {
+      const box = document.getElementById('box' + r);
+      if (box) {
+        if (Math.abs(rate - r) < 0.01) {
+          box.classList.add('active');
+        } else {
+          box.classList.remove('active');
+        }
+      }
+    });
+
+    const curAge = parseFloat(document.getElementById('curAge').value) || 38;
+    const retAge = parseFloat(document.getElementById('retAge').value) || 65;
+    const yearsToInvest = Math.max(1, retAge - curAge);
+    
+    const totalGap = parseFloat(document.getElementById('valTotalGapCapital').innerText.replace(/[$,]/g, '')) || 0;
+    document.getElementById('customPmtDisplay').innerText = formatMoney(calcPMT(totalGap, rate / 100, yearsToInvest)) + ' /月';
   }
 
   // 性別切換更新預設平均餘命
@@ -465,16 +517,15 @@
     document.getElementById('valCapMed').innerText = formatMoney(capMed);
     document.getElementById('valTotalGapCapital').innerText = formatMoney(totalGapCapital);
 
-    // 定期定額四大情境
+    // 定期定額四大情境數值
     document.getElementById('pmt0').innerText = formatMoney(calcPMT(totalGapCapital, 0.00, yearsToInvest));
     document.getElementById('pmt3').innerText = formatMoney(calcPMT(totalGapCapital, 0.03, yearsToInvest));
     document.getElementById('pmt5').innerText = formatMoney(calcPMT(totalGapCapital, 0.05, yearsToInvest));
     document.getElementById('pmt7').innerText = formatMoney(calcPMT(totalGapCapital, 0.07, yearsToInvest));
 
-    // 自選滑桿
-    const customRate = (parseFloat(document.getElementById('customRateSlider').value) || 6) / 100;
-    document.getElementById('customRateDisplay').innerText = (customRate * 100).toFixed(1) + '%';
-    document.getElementById('customPmtDisplay').innerText = formatMoney(calcPMT(totalGapCapital, customRate, yearsToInvest)) + ' /月';
+    // 自選滑桿與顯示同步
+    const curSliderRate = parseFloat(document.getElementById('customRateSlider').value) || 6;
+    updateCustomRateDisplay(curSliderRate);
 
     // 審核日誌清單
     document.getElementById('qualCheckList').innerHTML = qualLogs.map(item => `<div>${item}</div>`).join('');
@@ -514,16 +565,10 @@
     });
   }
 
-  // 監聽滑桿變動
+  // 監聽滑桿手動滑動事件
   document.getElementById('customRateSlider').addEventListener('input', function() {
-    const rate = parseFloat(this.value) / 100;
-    document.getElementById('customRateDisplay').innerText = (rate * 100).toFixed(1) + '%';
-    const curAge = parseFloat(document.getElementById('curAge').value) || 38;
-    const retAge = parseFloat(document.getElementById('retAge').value) || 65;
-    const yearsToInvest = Math.max(1, retAge - curAge);
-    
-    const totalGap = parseFloat(document.getElementById('valTotalGapCapital').innerText.replace(/[$,]/g, '')) || 0;
-    document.getElementById('customPmtDisplay').innerText = formatMoney(calcPMT(totalGap, rate, yearsToInvest)) + ' /月';
+    const rate = parseFloat(this.value);
+    updateCustomRateDisplay(rate);
   });
 
   // 監聽所有表單異動
