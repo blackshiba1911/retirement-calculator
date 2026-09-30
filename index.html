@@ -96,9 +96,6 @@
       font-weight: 700;
       color: var(--primary);
     }
-    .module-body {
-      transition: opacity 0.2s;
-    }
     .module-card.disabled {
       opacity: 0.55;
       background: #f1f5f9;
@@ -161,7 +158,7 @@
 <div class="container">
   <header>
     <h1>台灣跨職域退休金與全方位缺口精算系統</h1>
-    <p>涵蓋三軌年資審核、專項準備金自由選配、長照/旅遊年限客製、通膨終值與定期定額規劃</p>
+    <p>涵蓋三軌年資審核、既有資產複利折抵、專項選配、通膨終值與定期定額規劃</p>
   </header>
 
   <!-- 官方個人查詢快捷入口（雙軌整併版） -->
@@ -222,16 +219,41 @@
         </div>
       </div>
 
-      <!-- 2. 職涯年資盤點與壓力測試開關 -->
+      <!-- 2. 既有資產與自訂投資報酬率（全新模組） -->
       <div class="card">
-        <div class="card-title">2. 跨職域各軌年資盤點</div>
+        <div class="card-title">2. 目前已備既有資產與滾存設定</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label>現有銀行存款 / 定存（現值元）</label>
+            <input type="number" id="currSavings" value="500000" step="50000" />
+            <div class="hint">預設年化收益 1.5% 穩健定存利率。</div>
+          </div>
+          <div class="form-group">
+            <label>現有投資資產（股票/基金/ETF 現值）</label>
+            <input type="number" id="currInvest" value="1000000" step="50000" />
+            <div class="hint">已投入金融市場之本金與現值。</div>
+          </div>
+        </div>
+        <div class="form-group" style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 10px 12px; border-radius: 8px;">
+          <label style="color: var(--success); display: flex; justify-content: space-between;">
+            <span>📊 既有投資部位預期年化報酬率（%）</span>
+            <span id="currAssetFutureValText" style="font-weight: 700; color: var(--success); font-size: 0.85rem;"></span>
+          </label>
+          <input type="number" id="currInvestRate" value="6.0" step="0.5" min="0" max="15" />
+          <div class="hint" style="color: #166534;">此資產將以此報酬率複利滾存至退休年齡，直接抵減最終應備總缺口！</div>
+        </div>
+      </div>
+
+      <!-- 3. 職涯年資盤點與壓力測試開關 -->
+      <div class="card">
+        <div class="card-title">3. 跨職域各軌年資盤點</div>
         
         <!-- 勞保/政府年金破產極限自籌開關 -->
         <label class="stress-box" for="stressMode">
           <input type="checkbox" id="stressMode" />
           <div>
             <div class="stress-label">🔥 壓力測試：假設政府年金（勞保/公保/國保）破產或歸零</div>
-            <div class="stress-desc">模擬第一層確定給付全歸零，僅採計個人名下帶著走的「勞退專戶」，考驗純靠個人累積的防護力！</div>
+            <div class="stress-desc">模擬第一層確定給付全歸零，僅採計個人「勞退專戶」與「既有資產」，考驗自籌防護力！</div>
           </div>
         </label>
 
@@ -252,9 +274,9 @@
         </div>
       </div>
 
-      <!-- 3. 薪資級距與生活開銷 -->
+      <!-- 4. 薪資級距與生活開銷 -->
       <div class="card">
-        <div class="card-title">3. 薪資級距與退休後生活費</div>
+        <div class="card-title">4. 薪資級距與退休後生活費</div>
         <div class="form-group">
           <label>公教離職時月本俸（或相當職級薪額）</label>
           <input type="number" id="govSalary" value="45000" step="1000" />
@@ -282,9 +304,9 @@
         </div>
       </div>
 
-      <!-- 4. 三大專項儲備金（模組化勾選 + 旅遊長照年限客製） -->
+      <!-- 5. 三大專項儲備金（模組化勾選 + 旅遊長照年限客製） -->
       <div class="card">
-        <div class="card-title">4. 樂活旅遊、長照與醫療專項儲備（自由選配）</div>
+        <div class="card-title">5. 樂活旅遊、長照與醫療專項儲備（自由選配）</div>
         
         <!-- 模組 A：樂活旅遊金 -->
         <div class="module-card" id="cardTour">
@@ -413,11 +435,11 @@
         </div>
       </div>
 
-      <!-- 總資本缺口分析（雙向沖抵） -->
+      <!-- 總資本缺口分析（雙向沖抵 + 既有資產抵扣） -->
       <div class="card">
         <div class="card-title">全方位終身退休資本總缺口（含通膨終值）</div>
         <div class="result-item">
-          <div class="result-label">日常基本開銷終身缺口</div>
+          <div class="result-label">日常基本開銷終身需求缺口</div>
           <div class="result-val" id="valCapDaily">$0</div>
         </div>
         <div class="result-item">
@@ -432,16 +454,21 @@
           <div class="result-label" id="lblCapMed">醫療重症準備金</div>
           <div class="result-val" id="valCapMed">$0</div>
         </div>
+        <!-- 顯示既有資產滾存終值折抵額 -->
+        <div class="result-item" id="rowAssetOffset" style="background: #f0fdf4; padding: 8px 10px; border-radius: 6px; margin-top: 6px;">
+          <div class="result-label" style="color: var(--success); font-weight: 700;">💰 既有資產滾存至退休總值（直接折抵）</div>
+          <div class="result-val" id="valCapAssetOffset" style="color: var(--success); font-weight: 800;">-$0</div>
+        </div>
         <!-- 顯示多餘年金扣抵專項金的項目 -->
         <div class="result-item" id="rowSurplusOffset" style="display: none; background: #ecfdf5; padding: 8px 10px; border-radius: 6px; margin-top: 6px;">
-          <div class="result-label" style="color: var(--success); font-weight: 700;">💎 年金每月盈餘終身折抵額（抵扣已選專項）</div>
+          <div class="result-label" style="color: var(--success); font-weight: 700;">💎 年金每月盈餘終身折抵額（抵扣專項）</div>
           <div class="result-val" id="valCapSurplusOffset" style="color: var(--success); font-weight: 800;">-$0</div>
         </div>
 
         <div class="summary-card" id="summaryCardBox">
           <div style="font-size: 0.9rem; font-weight: 600; color: var(--text);" id="summaryCardTitle">退休應備總資本淨缺口：</div>
           <div class="gap-highlight" id="valTotalGapCapital">$0</div>
-          <div class="hint" id="totalGapCapitalHint">扣除現行年金後，需於退休前透過自主理財補足之總額。</div>
+          <div class="hint" id="totalGapCapitalHint">扣除現行年金與既有資產終值後，需於退休前透過自主理財補足之總額。</div>
         </div>
 
         <!-- 缺口分佈圓餅圖 -->
@@ -485,14 +512,14 @@
         <!-- 自選報酬率滑桿 -->
         <div style="margin-top: 16px; background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid var(--border);">
           <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; font-weight: 600;">
-            <span>設定年化報酬率：<strong id="customRateDisplay" style="color: var(--secondary); font-size: 1rem;">6.0%</strong></span>
+            <span>設定定期定額報酬率：<strong id="customRateDisplay" style="color: var(--secondary); font-size: 1rem;">6.0%</strong></span>
             <span>每月需定期定額：<strong id="customPmtDisplay" style="color: var(--danger); font-size: 1.15rem;">$0</strong></span>
           </div>
           <input type="range" id="customRateSlider" min="0" max="12" step="0.5" value="6" style="width: 100%; margin-top: 10px; cursor: pointer;" />
         </div>
 
         <div class="rule-note">
-          <strong>※ 自由選配說明：</strong>旅遊、長照與醫療準備金可自由勾選啟用或剔除；未勾選項目自動歸零，讓您專注於符合個人需求的財務缺口規劃！
+          <strong>※ 全局資產折抵說明：</strong>您目前的既有存款與投資，已按您自訂的報酬率複利滾存至退休年齡折算終值，直接從總資本缺口中扣除，每月需定期定額的負擔大幅減輕！
         </div>
       </div>
     </div>
@@ -635,6 +662,19 @@
       `距退休尚有 ${yearsToInvest} 年；退休後生活規劃 ${yearsInRetire} 年（${retAge} 歲至 ${lifeExp} 歲）。`;
     document.getElementById('yearsToInvestBadge').innerText = `投入期：${yearsToInvest} 年`;
 
+    // 既有資產與自訂報酬率精算
+    const currSavings = parseFloat(document.getElementById('currSavings').value) || 0;
+    const currInvest = parseFloat(document.getElementById('currInvest').value) || 0;
+    const currInvestRate = (parseFloat(document.getElementById('currInvestRate').value) || 0) / 100;
+
+    // 存款終值（按 1.5% 滾存）+ 投資終值（按自選報酬率滾存）
+    const savingsFV = currSavings * Math.pow(1 + 0.015, yearsToInvest);
+    const investFV = currInvest * Math.pow(1 + currInvestRate, yearsToInvest);
+    const totalExistingAssetFV = savingsFV + investFV;
+
+    document.getElementById('currAssetFutureValText').innerText = 
+      `退休時終值預估：${formatMoney(totalExistingAssetFV)}`;
+
     const yGov = parseFloat(document.getElementById('yearsGov').value) || 0;
     const yNat = parseFloat(document.getElementById('yearsNat').value) || 0;
     const yLab = parseFloat(document.getElementById('yearsLab').value) || 0;
@@ -711,7 +751,7 @@
       govInsMonthly = 0;
       labInsMonthly = 0;
       natInsMonthly = 0;
-      qualLogs.unshift(`⚠️ 【極限壓力測試啟動中】：假設政府勞保、公保與國保全數歸零，僅採計個人名下之「勞退新制專戶」！`);
+      qualLogs.unshift(`⚠️ 【極限壓力測試啟動中】：假設政府勞保、公保與國保全數歸零，僅採計個人名下之「勞退新制專戶」與「既有資產」！`);
       document.getElementById('overallStatusBadge').innerText = '🔥 壓力測試模式 (自籌)';
       document.getElementById('overallStatusBadge').className = 'status-badge badge-stress';
       document.getElementById('summaryCardBox').classList.add('stress-active');
@@ -754,26 +794,21 @@
     const totalSpecificFunds = capTour + capLTC + capMed;
 
     let capDailyGap = 0;
-    let totalGapCapital = 0;
+    let rawCapitalGap = 0;
     let surplusTotalOffset = 0;
 
     if (monthlyNetBalance < 0) {
       // 赤字
       const monthlyDeficit = Math.abs(monthlyNetBalance);
       capDailyGap = monthlyDeficit * 12 * yearsInRetire;
-      totalGapCapital = capDailyGap + totalSpecificFunds;
-      
+      rawCapitalGap = capDailyGap + totalSpecificFunds;
       document.getElementById('rowSurplusOffset').style.display = 'none';
-      document.getElementById('summaryCardBox').classList.remove('surplus-active');
-      document.getElementById('summaryCardTitle').innerText = isStress ? '🔥 零政府年金！全額自籌總淨缺口：' : '退休應備總資本淨缺口：';
-      document.getElementById('totalGapCapitalHint').innerText = '包含日常開銷赤字與已選配之專項儲備金，需於退休前備齊。';
     } else {
-      // 盈餘折抵
+      // 盈餘折抵專項
       capDailyGap = 0;
       const monthlySurplus = monthlyNetBalance;
       surplusTotalOffset = monthlySurplus * 12 * yearsInRetire;
-      
-      totalGapCapital = Math.max(0, totalSpecificFunds - surplusTotalOffset);
+      rawCapitalGap = Math.max(0, totalSpecificFunds - surplusTotalOffset);
 
       if (totalSpecificFunds > 0) {
         document.getElementById('rowSurplusOffset').style.display = 'flex';
@@ -781,20 +816,25 @@
       } else {
         document.getElementById('rowSurplusOffset').style.display = 'none';
       }
-      
-      if (totalGapCapital === 0) {
-        document.getElementById('summaryCardBox').classList.add('surplus-active');
-        document.getElementById('summaryCardTitle').innerText = '🎉 恭喜！高薪資與年金已完全覆蓋生活與專項開銷：';
-        document.getElementById('totalGapCapitalHint').innerText = `每月年金盈餘 ${formatMoney(monthlySurplus)} 換算終身累積達 ${formatMoney(surplusTotalOffset)}，已完全吸收所有已選配的專項需求，退休淨缺口降為 $0！`;
-      } else {
-        document.getElementById('summaryCardBox').classList.remove('surplus-active');
-        document.getElementById('summaryCardTitle').innerText = '退休應備總資本淨缺口（已由年金盈餘折抵）：';
-        document.getElementById('totalGapCapitalHint').innerText = `每月多出的年金盈餘 ${formatMoney(monthlySurplus)} 已抵扣已選專項需求，剩餘淨缺口大幅縮小！`;
-      }
+    }
+
+    // 既有資產終值直接折抵總缺口
+    document.getElementById('valCapAssetOffset').innerText = '-' + formatMoney(totalExistingAssetFV);
+    const finalTotalGapCapital = Math.max(0, rawCapitalGap - totalExistingAssetFV);
+
+    // 更新提示卡片
+    if (finalTotalGapCapital === 0) {
+      document.getElementById('summaryCardBox').classList.add('surplus-active');
+      document.getElementById('summaryCardTitle').innerText = '🎉 恭喜！年金與既有資產已完全覆蓋所有退休需求：';
+      document.getElementById('totalGapCapitalHint').innerText = `您的既有資產滾存終值達 ${formatMoney(totalExistingAssetFV)}，加上年金給付，已完全覆蓋所有生活開銷與專項基金，目前淨缺口為 $0！`;
+    } else {
+      document.getElementById('summaryCardBox').classList.remove('surplus-active');
+      document.getElementById('summaryCardTitle').innerText = isStress ? '🔥 零政府年金！全額自籌總淨缺口：' : '退休應備總資本淨缺口：';
+      document.getElementById('totalGapCapitalHint').innerText = `已扣除年金與既有資產終值 ${formatMoney(totalExistingAssetFV)}，剩餘淨缺口需於退休前定期定額補足。`;
     }
 
     // 全域保存
-    window._CURRENT_TOTAL_GAP = totalGapCapital;
+    window._CURRENT_TOTAL_GAP = finalTotalGapCapital;
 
     // 更新數值顯示
     document.getElementById('valGovPen').innerText = isStress ? '$0 (模擬歸零)' : formatMoney(govPenMonthly);
@@ -828,14 +868,14 @@
     document.getElementById('valCapMed').style.color = enableMed ? 'var(--primary)' : 'var(--muted)';
 
     const elTotalGap = document.getElementById('valTotalGapCapital');
-    elTotalGap.innerText = formatMoney(totalGapCapital);
-    elTotalGap.className = totalGapCapital === 0 ? 'gap-highlight gap-green' : 'gap-highlight gap-red';
+    elTotalGap.innerText = formatMoney(finalTotalGapCapital);
+    elTotalGap.className = finalTotalGapCapital === 0 ? 'gap-highlight gap-green' : 'gap-highlight gap-red';
 
     // 定期定額四大情境數值
-    document.getElementById('pmt0').innerText = formatMoney(calcPMT(totalGapCapital, 0.00, yearsToInvest));
-    document.getElementById('pmt3').innerText = formatMoney(calcPMT(totalGapCapital, 0.03, yearsToInvest));
-    document.getElementById('pmt5').innerText = formatMoney(calcPMT(totalGapCapital, 0.05, yearsToInvest));
-    document.getElementById('pmt7').innerText = formatMoney(calcPMT(totalGapCapital, 0.07, yearsToInvest));
+    document.getElementById('pmt0').innerText = formatMoney(calcPMT(finalTotalGapCapital, 0.00, yearsToInvest));
+    document.getElementById('pmt3').innerText = formatMoney(calcPMT(finalTotalGapCapital, 0.03, yearsToInvest));
+    document.getElementById('pmt5').innerText = formatMoney(calcPMT(finalTotalGapCapital, 0.05, yearsToInvest));
+    document.getElementById('pmt7').innerText = formatMoney(calcPMT(finalTotalGapCapital, 0.07, yearsToInvest));
 
     // 自選滑桿與顯示同步
     const curSliderRate = parseFloat(document.getElementById('customRateSlider').value) || 6;
@@ -846,29 +886,31 @@
 
     // 安全更新圓餅圖
     try {
-      updatePieChart(capDailyGap, capTour, capLTC, capMed, surplusTotalOffset);
+      updatePieChart(capDailyGap, capTour, capLTC, capMed, surplusTotalOffset + totalExistingAssetFV);
     } catch (e) {
       console.warn("Chart render skipped", e);
     }
   }
 
-  function updatePieChart(daily, tour, ltc, med, offset) {
+  function updatePieChart(daily, tour, ltc, med, totalOffset) {
     const canvas = document.getElementById('gapPieChart');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
+    let adjDaily = daily;
     let adjTour = tour;
     let adjLTC = ltc;
     let adjMed = med;
     
-    if (offset > 0) {
-      let rem = offset;
+    if (totalOffset > 0) {
+      let rem = totalOffset;
+      if (rem >= adjDaily) { rem -= adjDaily; adjDaily = 0; } else { adjDaily -= rem; rem = 0; }
       if (rem >= adjTour) { rem -= adjTour; adjTour = 0; } else { adjTour -= rem; rem = 0; }
       if (rem >= adjLTC) { rem -= adjLTC; adjLTC = 0; } else { adjLTC -= rem; rem = 0; }
       if (rem >= adjMed) { rem -= adjMed; adjMed = 0; } else { adjMed -= rem; rem = 0; }
     }
 
-    const dataVals = [daily, adjTour, adjLTC, adjMed];
+    const dataVals = [adjDaily, adjTour, adjLTC, adjMed];
     
     if (pieChart) {
       pieChart.data.datasets[0].data = dataVals;
@@ -879,7 +921,7 @@
     pieChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: ['日常生活缺口', '樂活旅遊需求', '長照專項需求', '醫療重症需求'],
+        labels: ['日常生活淨缺口', '樂活旅遊淨需求', '長照專項淨需求', '醫療重症淨需求'],
         datasets: [{
           data: dataVals,
           backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6'],
