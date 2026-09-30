@@ -68,6 +68,47 @@
     .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--secondary); box-shadow: 0 0 0 2px rgba(2,132,199,0.2); }
     .hint { font-size: 0.76rem; color: var(--muted); margin-top: 4px; line-height: 1.4; }
 
+    /* 專項金模組外框（支援勾選啟用/反灰禁用） */
+    .module-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 14px;
+      transition: all 0.25s ease;
+    }
+    .module-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .module-header input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--secondary);
+    }
+    .module-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .module-body {
+      transition: opacity 0.2s;
+    }
+    .module-card.disabled {
+      opacity: 0.55;
+      background: #f1f5f9;
+    }
+    .module-card.disabled input:not([type="checkbox"]),
+    .module-card.disabled select {
+      pointer-events: none;
+      background: #e2e8f0;
+    }
+
     .status-badge { font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; font-weight: bold; }
     .badge-pass { background: #dcfce7; color: var(--success); }
     .badge-stress { background: #fee2e2; color: var(--danger); }
@@ -120,7 +161,7 @@
 <div class="container">
   <header>
     <h1>台灣跨職域退休金與全方位缺口精算系統</h1>
-    <p>涵蓋三軌年資審核、長照年限客製、通膨終值精算、高薪資盈餘雙向折抵與定期定額規劃</p>
+    <p>涵蓋三軌年資審核、專項準備金自由選配、長照/旅遊年限客製、通膨終值與定期定額規劃</p>
   </header>
 
   <!-- 官方個人查詢快捷入口（雙軌整併版） -->
@@ -241,47 +282,90 @@
         </div>
       </div>
 
-      <!-- 4. 三大專項儲備金（長照年限開放自選） -->
+      <!-- 4. 三大專項儲備金（模組化勾選 + 旅遊長照年限客製） -->
       <div class="card">
-        <div class="card-title">4. 樂活旅遊、長照與醫療專項儲備（今日現值）</div>
-        <div class="form-group">
-          <label>✈️ 退休前期樂活旅遊金（每年預算）</label>
-          <input type="number" id="tourAnnual" value="150000" step="10000" />
-          <div class="hint">設定退休初期活力充沛前 10 年之年度旅遊金。</div>
-        </div>
+        <div class="card-title">4. 樂活旅遊、長照與醫療專項儲備（自由選配）</div>
         
-        <!-- 長照模組升級：月預算 + 年限情境自選 -->
-        <div style="background: #f8fafc; border: 1px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 14px;">
-          <div class="form-group" style="margin-bottom: 10px;">
-            <label>🦽 長期照顧預備月預算（每月機構/看護/耗材費用）</label>
-            <input type="number" id="ltcMonthly" value="40000" step="5000" />
-          </div>
-          <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px; align-items: flex-end;">
-            <div class="form-group" style="margin-bottom: 0;">
-              <label>長照預估年限情境選擇</label>
-              <select id="ltcPresetSelect">
-                <option value="3">輕度 / 短期照護（3 年）</option>
-                <option value="7.5" selected>衛福部國人平均不健康餘命（7.5 年）</option>
-                <option value="10">失智 / 長期臥床常態（10 年）</option>
-                <option value="15">極限完整照護需求（15 年）</option>
-                <option value="custom">自訂年數 ✎</option>
-              </select>
+        <!-- 模組 A：樂活旅遊金 -->
+        <div class="module-card" id="cardTour">
+          <label class="module-header" for="enableTour">
+            <input type="checkbox" id="enableTour" checked />
+            <span class="module-title">✈️ 納入「樂活旅遊金」規劃</span>
+          </label>
+          <div class="module-body">
+            <div class="form-group" style="margin-bottom: 10px;">
+              <label>每年旅遊預算（今日現值元）</label>
+              <input type="number" id="tourAnnual" value="150000" step="10000" />
             </div>
-            <div class="form-group" style="margin-bottom: 0;">
-              <label>採計年數（年）</label>
-              <input type="number" id="ltcYears" value="7.5" min="0.5" max="30" step="0.5" />
+            <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px; align-items: flex-end;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>預計享受旅遊年限</label>
+                <select id="tourPresetSelect">
+                  <option value="5">黃金活力期（5 年）</option>
+                  <option value="10" selected>健康充沛期（10 年）</option>
+                  <option value="15">深度漫遊期（15 年）</option>
+                  <option value="custom">自訂年數 ✎</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>採計年數（年）</label>
+                <input type="number" id="tourYears" value="10" min="1" max="30" step="1" />
+              </div>
             </div>
-          </div>
-          <div class="hint" id="ltcSummaryHint" style="margin-top: 6px; color: var(--secondary); font-weight: 500;">
-            預估長照總月數：90 個月
+            <div class="hint" id="tourSummaryHint" style="margin-top: 6px; color: var(--secondary); font-weight: 500;">
+              累計旅遊預備：共 10 年
+            </div>
           </div>
         </div>
 
-        <div class="form-group">
-          <label>🏥 醫療重症準備金（定額專款總額）</label>
-          <input type="number" id="medFixed" value="1500000" step="100000" />
-          <div class="hint">因應自費標靶、達文西手術或高額自費醫材專款。</div>
+        <!-- 模組 B：長期照顧準備金 -->
+        <div class="module-card" id="cardLTC">
+          <label class="module-header" for="enableLTC">
+            <input type="checkbox" id="enableLTC" checked />
+            <span class="module-title">🦽 納入「長期照顧準備金」規劃</span>
+          </label>
+          <div class="module-body">
+            <div class="form-group" style="margin-bottom: 10px;">
+              <label>每月看護/機構/耗材預算（今日現值元）</label>
+              <input type="number" id="ltcMonthly" value="40000" step="5000" />
+            </div>
+            <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px; align-items: flex-end;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>長照預估年限情境</label>
+                <select id="ltcPresetSelect">
+                  <option value="3">輕度 / 短期照護（3 年）</option>
+                  <option value="7.5" selected>衛福部國人平均（7.5 年）</option>
+                  <option value="10">失智 / 臥床常態（10 年）</option>
+                  <option value="15">高規格完整照護（15 年）</option>
+                  <option value="custom">自訂年數 ✎</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>採計年數（年）</label>
+                <input type="number" id="ltcYears" value="7.5" min="0.5" max="30" step="0.5" />
+              </div>
+            </div>
+            <div class="hint" id="ltcSummaryHint" style="margin-top: 6px; color: var(--secondary); font-weight: 500;">
+              預估長照總月數：90 個月（7.5 年）
+            </div>
+          </div>
         </div>
+
+        <!-- 模組 C：醫療重症準備金 -->
+        <div class="module-card" id="cardMed">
+          <label class="module-header" for="enableMed">
+            <input type="checkbox" id="enableMed" checked />
+            <span class="module-title">🏥 納入「醫療重症準備金（定額專款）」規劃</span>
+          </label>
+          <div class="module-body">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>自費高額醫療準備金（今日現值元）</label>
+              <input type="number" id="medFixed" value="1500000" step="100000" />
+              <div class="hint">因應自費標靶、達文西手術、高額自費醫材與新式療法專款。</div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -337,7 +421,7 @@
           <div class="result-val" id="valCapDaily">$0</div>
         </div>
         <div class="result-item">
-          <div class="result-label">樂活旅遊金儲備總額 (10年)</div>
+          <div class="result-label" id="lblCapTour">樂活旅遊金儲備 (10年)</div>
           <div class="result-val" id="valCapTour">$0</div>
         </div>
         <div class="result-item">
@@ -345,12 +429,12 @@
           <div class="result-val" id="valCapLTC">$0</div>
         </div>
         <div class="result-item">
-          <div class="result-label">醫療重症準備金</div>
+          <div class="result-label" id="lblCapMed">醫療重症準備金</div>
           <div class="result-val" id="valCapMed">$0</div>
         </div>
         <!-- 顯示多餘年金扣抵專項金的項目 -->
         <div class="result-item" id="rowSurplusOffset" style="display: none; background: #ecfdf5; padding: 8px 10px; border-radius: 6px; margin-top: 6px;">
-          <div class="result-label" style="color: var(--success); font-weight: 700;">💎 年金每月盈餘終身折抵額（抵扣專項）</div>
+          <div class="result-label" style="color: var(--success); font-weight: 700;">💎 年金每月盈餘終身折抵額（抵扣已選專項）</div>
           <div class="result-val" id="valCapSurplusOffset" style="color: var(--success); font-weight: 800;">-$0</div>
         </div>
 
@@ -408,7 +492,7 @@
         </div>
 
         <div class="rule-note">
-          <strong>※ 通膨精算說明：</strong>本系統已自動將生活費與專項支出以您設定的通膨率複利膨脹至退休時點；若年金有盈餘，亦將換算終身現值全數折抵專項金！
+          <strong>※ 自由選配說明：</strong>旅遊、長照與醫療準備金可自由勾選啟用或剔除；未勾選項目自動歸零，讓您專注於符合個人需求的財務缺口規劃！
         </div>
       </div>
     </div>
@@ -475,7 +559,28 @@
     calculateAll();
   });
 
-  // 長照快速情境選單連動
+  // 旅遊年限快速選單連動
+  document.getElementById('tourPresetSelect').addEventListener('change', function() {
+    const val = this.value;
+    const tourYearsInput = document.getElementById('tourYears');
+    if (val !== 'custom') {
+      tourYearsInput.value = parseFloat(val);
+    }
+    calculateAll();
+  });
+
+  document.getElementById('tourYears').addEventListener('input', function() {
+    const curVal = parseFloat(this.value);
+    const presetSelect = document.getElementById('tourPresetSelect');
+    if ([5, 10, 15].includes(curVal)) {
+      presetSelect.value = curVal.toString();
+    } else {
+      presetSelect.value = 'custom';
+    }
+    calculateAll();
+  });
+
+  // 長照快速選單連動
   document.getElementById('ltcPresetSelect').addEventListener('change', function() {
     const val = this.value;
     const ltcYearsInput = document.getElementById('ltcYears');
@@ -485,7 +590,6 @@
     calculateAll();
   });
 
-  // 手動修改長照年數時，將下拉選單標示為 custom
   document.getElementById('ltcYears').addEventListener('input', function() {
     const curVal = parseFloat(this.value);
     const presetSelect = document.getElementById('ltcPresetSelect');
@@ -497,7 +601,20 @@
     calculateAll();
   });
 
+  // 監聽三大專項 checkbox 啟閉樣式
+  function syncModuleStyles() {
+    const tourOn = document.getElementById('enableTour').checked;
+    const ltcOn = document.getElementById('enableLTC').checked;
+    const medOn = document.getElementById('enableMed').checked;
+
+    document.getElementById('cardTour').classList.toggle('disabled', !tourOn);
+    document.getElementById('cardLTC').classList.toggle('disabled', !ltcOn);
+    document.getElementById('cardMed').classList.toggle('disabled', !medOn);
+  }
+
   function calculateAll() {
+    syncModuleStyles();
+
     // 檢查是否開啟「壓力測試：政府年金歸零」
     const isStress = document.getElementById('stressMode').checked;
 
@@ -611,19 +728,29 @@
     // 每月收支餘絀
     const monthlyNetBalance = totalMonthlyPension - targetMonthlyFuture;
 
-    // 讀取長照自選年數
+    // 檢查三大專項勾選狀態
+    const enableTour = document.getElementById('enableTour').checked;
+    const enableLTC = document.getElementById('enableLTC').checked;
+    const enableMed = document.getElementById('enableMed').checked;
+
+    // 專項參數讀取
+    const tourAnnual = parseFloat(document.getElementById('tourAnnual').value) || 0;
+    const tourYears = parseFloat(document.getElementById('tourYears').value) || 10;
+    document.getElementById('tourSummaryHint').innerText = `累計旅遊預備：共 ${tourYears} 年`;
+    document.getElementById('lblCapTour').innerText = enableTour ? `樂活旅遊金儲備 (${tourYears}年)` : `樂活旅遊金 (未納入)`;
+
+    const ltcMonthly = parseFloat(document.getElementById('ltcMonthly').value) || 0;
     const ltcYears = parseFloat(document.getElementById('ltcYears').value) || 7.5;
     document.getElementById('ltcSummaryHint').innerText = `預估長照總月數：${Math.round(ltcYears * 12)} 個月（${ltcYears} 年）`;
-    document.getElementById('lblCapLTC').innerText = `長期照顧專項金 (${ltcYears}年)`;
+    document.getElementById('lblCapLTC').innerText = enableLTC ? `長期照顧專項金 (${ltcYears}年)` : `長期照顧專項金 (未納入)`;
 
-    // 專項儲備金需求（含自選長照年數 + 通膨調整）
-    const tourAnnual = parseFloat(document.getElementById('tourAnnual').value) || 0;
-    const ltcMonthly = parseFloat(document.getElementById('ltcMonthly').value) || 0;
     const medFixed = parseFloat(document.getElementById('medFixed').value) || 0;
+    document.getElementById('lblCapMed').innerText = enableMed ? `醫療重症準備金` : `醫療重症準備金 (未納入)`;
 
-    const capTour = (tourAnnual * 10) * infFactor;
-    const capLTC = (ltcMonthly * 12 * ltcYears) * infFactor; // 採用自選年數
-    const capMed = medFixed * infFactor;
+    // 若未勾選，金額直接歸零；若有勾選，計算通膨終值
+    const capTour = enableTour ? (tourAnnual * tourYears * infFactor) : 0;
+    const capLTC = enableLTC ? (ltcMonthly * 12 * ltcYears * infFactor) : 0;
+    const capMed = enableMed ? (medFixed * infFactor) : 0;
     const totalSpecificFunds = capTour + capLTC + capMed;
 
     let capDailyGap = 0;
@@ -639,7 +766,7 @@
       document.getElementById('rowSurplusOffset').style.display = 'none';
       document.getElementById('summaryCardBox').classList.remove('surplus-active');
       document.getElementById('summaryCardTitle').innerText = isStress ? '🔥 零政府年金！全額自籌總淨缺口：' : '退休應備總資本淨缺口：';
-      document.getElementById('totalGapCapitalHint').innerText = '包含日常開銷赤字與三大專項儲備金（已計入通膨與長照自選年限），需於退休前備齊。';
+      document.getElementById('totalGapCapitalHint').innerText = '包含日常開銷赤字與已選配之專項儲備金，需於退休前備齊。';
     } else {
       // 盈餘折抵
       capDailyGap = 0;
@@ -648,17 +775,21 @@
       
       totalGapCapital = Math.max(0, totalSpecificFunds - surplusTotalOffset);
 
-      document.getElementById('rowSurplusOffset').style.display = 'flex';
-      document.getElementById('valCapSurplusOffset').innerText = '-' + formatMoney(surplusTotalOffset);
+      if (totalSpecificFunds > 0) {
+        document.getElementById('rowSurplusOffset').style.display = 'flex';
+        document.getElementById('valCapSurplusOffset').innerText = '-' + formatMoney(Math.min(totalSpecificFunds, surplusTotalOffset));
+      } else {
+        document.getElementById('rowSurplusOffset').style.display = 'none';
+      }
       
       if (totalGapCapital === 0) {
         document.getElementById('summaryCardBox').classList.add('surplus-active');
-        document.getElementById('summaryCardTitle').innerText = '🎉 恭喜！高薪資與年金已完全覆蓋通膨後生活與專項：';
-        document.getElementById('totalGapCapitalHint').innerText = `每月年金盈餘 ${formatMoney(monthlySurplus)} 換算終身累積達 ${formatMoney(surplusTotalOffset)}，已完全抵沖通膨後的專項金，退休淨缺口降為 $0！`;
+        document.getElementById('summaryCardTitle').innerText = '🎉 恭喜！高薪資與年金已完全覆蓋生活與專項開銷：';
+        document.getElementById('totalGapCapitalHint').innerText = `每月年金盈餘 ${formatMoney(monthlySurplus)} 換算終身累積達 ${formatMoney(surplusTotalOffset)}，已完全吸收所有已選配的專項需求，退休淨缺口降為 $0！`;
       } else {
         document.getElementById('summaryCardBox').classList.remove('surplus-active');
         document.getElementById('summaryCardTitle').innerText = '退休應備總資本淨缺口（已由年金盈餘折抵）：';
-        document.getElementById('totalGapCapitalHint').innerText = `每月多出的年金盈餘 ${formatMoney(monthlySurplus)} 已抵扣 ${formatMoney(surplusTotalOffset)} 的通膨專項需求，剩餘淨缺口大幅縮小！`;
+        document.getElementById('totalGapCapitalHint').innerText = `每月多出的年金盈餘 ${formatMoney(monthlySurplus)} 已抵扣已選專項需求，剩餘淨缺口大幅縮小！`;
       }
     }
 
@@ -688,9 +819,13 @@
     }
 
     document.getElementById('valCapDaily').innerText = formatMoney(capDailyGap);
-    document.getElementById('valCapTour').innerText = formatMoney(capTour);
-    document.getElementById('valCapLTC').innerText = formatMoney(capLTC);
-    document.getElementById('valCapMed').innerText = formatMoney(capMed);
+    document.getElementById('valCapTour').innerText = enableTour ? formatMoney(capTour) : '$0 (未選)';
+    document.getElementById('valCapLTC').innerText = enableLTC ? formatMoney(capLTC) : '$0 (未選)';
+    document.getElementById('valCapMed').innerText = enableMed ? formatMoney(capMed) : '$0 (未選)';
+
+    document.getElementById('valCapTour').style.color = enableTour ? 'var(--primary)' : 'var(--muted)';
+    document.getElementById('valCapLTC').style.color = enableLTC ? 'var(--primary)' : 'var(--muted)';
+    document.getElementById('valCapMed').style.color = enableMed ? 'var(--primary)' : 'var(--muted)';
 
     const elTotalGap = document.getElementById('valTotalGapCapital');
     elTotalGap.innerText = formatMoney(totalGapCapital);
@@ -744,7 +879,7 @@
     pieChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: ['日常生活缺口', '樂活旅遊淨需求', '長照專項淨需求', '醫療重症淨需求'],
+        labels: ['日常生活缺口', '樂活旅遊需求', '長照專項需求', '醫療重症需求'],
         datasets: [{
           data: dataVals,
           backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6'],
