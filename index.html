@@ -120,7 +120,7 @@
 <div class="container">
   <header>
     <h1>台灣跨職域退休金與全方位缺口精算系統</h1>
-    <p>涵蓋三軌年資審核、長照醫療與旅遊專項儲備、高薪資盈餘雙向折抵與定期定額規劃</p>
+    <p>涵蓋三軌年資審核、通膨終值精算、長照醫療旅遊專項儲備、高薪資盈餘雙向折抵與定期定額規劃</p>
   </header>
 
   <!-- 官方個人查詢快捷入口（雙軌整併版） -->
@@ -143,9 +143,9 @@
   <div class="grid">
     <!-- 左欄：參數輸入區 -->
     <div class="col">
-      <!-- 1. 年齡與餘命參數 -->
+      <!-- 1. 年齡與通膨基準 -->
       <div class="card">
-        <div class="card-title">1. 年齡時程與生命表基準</div>
+        <div class="card-title">1. 年齡時程、生命表與通貨膨脹率</div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div class="form-group">
             <label>目前年齡（歲）</label>
@@ -156,17 +156,27 @@
             <input type="number" id="retAge" value="65" min="50" max="75" />
           </div>
         </div>
-        <div class="form-group">
-          <label>性別（連動內政部簡易生命表平均餘命）</label>
-          <select id="genderSelect">
-            <option value="male">男性（平均餘命約 77.5 歲）</option>
-            <option value="female" selected>女性（平均餘命約 84.1 歲）</option>
-            <option value="all">全體平均（平均餘命約 80.8 歲）</option>
-          </select>
+        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 12px;">
+          <div class="form-group">
+            <label>性別（生命表餘命基準）</label>
+            <select id="genderSelect">
+              <option value="male">男性（平均約 77.5 歲）</option>
+              <option value="female" selected>女性（平均約 84.1 歲）</option>
+              <option value="all">全體（平均約 80.8 歲）</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>精算身故年齡（歲）</label>
+            <input type="number" id="lifeExp" value="85" min="65" max="105" />
+          </div>
         </div>
-        <div class="form-group">
-          <label>設定精算身故年齡（歲）</label>
-          <input type="number" id="lifeExp" value="85" min="65" max="105" />
+        <!-- 通膨率輸入 -->
+        <div class="form-group" style="background: #f8fafc; border: 1px solid var(--border); padding: 10px 12px; border-radius: 8px;">
+          <label style="color: var(--secondary); display: flex; justify-content: space-between;">
+            <span>📈 預估年化通貨膨脹率（%）</span>
+            <span id="inflationFactorText" style="font-weight: normal; color: var(--muted); font-size: 0.78rem;"></span>
+          </label>
+          <input type="number" id="inflationRate" value="2.0" step="0.1" min="0" max="10" />
           <div class="hint" id="ageSummaryHint">距退休尚有 27 年；退休後生活約 20 年。</div>
         </div>
       </div>
@@ -213,7 +223,7 @@
           <input type="number" id="labSalary" value="45800" max="45800" step="100" />
         </div>
         <div class="form-group">
-          <label>勞退新制平均月提繳工資（試算可輸入更高薪資）</label>
+          <label>勞退新制平均月提繳工資</label>
           <input type="number" id="labPenSalary" value="50000" step="5000" />
           <div class="hint">試著調高此金額，多出的退休金將自動扣抵下方的旅遊金、長照金與醫療金！</div>
         </div>
@@ -225,14 +235,15 @@
           </select>
         </div>
         <div class="form-group">
-          <label>預期退休後每月基本生活費（現值元）</label>
+          <label>預期退休後每月基本生活費（今日現值購買力）</label>
           <input type="number" id="targetCost" value="50000" step="1000" />
+          <div class="hint" id="targetCostInflatedHint" style="color: var(--secondary); font-weight: 600;"></div>
         </div>
       </div>
 
       <!-- 4. 三大專項儲備金 -->
       <div class="card">
-        <div class="card-title">4. 樂活旅遊、長照與醫療專項儲備</div>
+        <div class="card-title">4. 樂活旅遊、長照與醫療專項儲備（今日現值）</div>
         <div class="form-group">
           <label>✈️ 退休前期樂活旅遊金（每年預算）</label>
           <input type="number" id="tourAnnual" value="150000" step="10000" />
@@ -290,14 +301,14 @@
           <div class="result-val" style="color: var(--primary);" id="valTotalMonthly">$0</div>
         </div>
         <div class="result-item" style="padding-top: 10px;">
-          <div class="result-label">每月基本生活收支餘絀</div>
+          <div class="result-label">每月基本生活收支餘絀（通膨調整後）</div>
           <div class="result-val" id="valMonthlyGap">$0</div>
         </div>
       </div>
 
       <!-- 總資本缺口分析（雙向沖抵） -->
       <div class="card">
-        <div class="card-title">全方位終身退休資本總缺口</div>
+        <div class="card-title">全方位終身退休資本總缺口（含通膨終值）</div>
         <div class="result-item">
           <div class="result-label">日常基本開銷終身缺口</div>
           <div class="result-val" id="valCapDaily">$0</div>
@@ -374,7 +385,7 @@
         </div>
 
         <div class="rule-note">
-          <strong>※ 雙向沖抵說明：</strong>若退休年金超過每月基本生活費，多出來的「月盈餘」會換算為終身累積資產，自動抵減旅遊金、長照與醫療準備金，從現在起每個月需存的錢將真實減少！
+          <strong>※ 通膨精算說明：</strong>本系統已自動將生活費與專項支出以您設定的通膨率複利膨脹至退休時點；若年金有盈餘，亦將換算終身現值全數折抵專項金！
         </div>
       </div>
     </div>
@@ -424,7 +435,7 @@
     const retAge = parseFloat(document.getElementById('retAge').value) || 65;
     const yearsToInvest = Math.max(1, retAge - curAge);
     
-    // 從 DOM 屬性讀取目前真實的淨總缺口（浮點數）
+    // 從全域變數讀取最新總缺口
     const totalGap = window._CURRENT_TOTAL_GAP || 0;
     const pmtVal = calcPMT(totalGap, rate / 100, yearsToInvest);
     
@@ -455,6 +466,11 @@
     const yearsToInvest = Math.max(1, retAge - curAge);
     const yearsInRetire = Math.max(1, lifeExp - retAge);
 
+    // 讀取通膨率
+    const infRate = (parseFloat(document.getElementById('inflationRate').value) || 0) / 100;
+    const infFactor = Math.pow(1 + infRate, yearsToInvest); // 退休時點之通膨複利倍數
+
+    document.getElementById('inflationFactorText').innerText = `距退休 ${yearsToInvest} 年物價預計膨脹 ${(infFactor).toFixed(2)} 倍`;
     document.getElementById('ageSummaryHint').innerText = 
       `距退休尚有 ${yearsToInvest} 年；退休後生活規劃 ${yearsInRetire} 年（${retAge} 歲至 ${lifeExp} 歲）。`;
     document.getElementById('yearsToInvestBadge').innerText = `投入期：${yearsToInvest} 年`;
@@ -468,7 +484,13 @@
     const sLab = parseFloat(document.getElementById('labSalary').value) || 0;
     const sLabPen = parseFloat(document.getElementById('labPenSalary').value) || 0;
     const rateLabPen = parseFloat(document.getElementById('labRate').value) || 0.06;
-    const targetMonthly = parseFloat(document.getElementById('targetCost').value) || 0;
+
+    // 今日現值生活費 -> 經通膨調整後退休時月生活費需求
+    const targetMonthlyToday = parseFloat(document.getElementById('targetCost').value) || 0;
+    const targetMonthlyFuture = targetMonthlyToday * infFactor;
+
+    document.getElementById('targetCostInflatedHint').innerText = 
+      `換算退休時點實質所需月支出：約 ${formatMoney(targetMonthlyFuture)} /月`;
 
     let qualLogs = [];
 
@@ -506,12 +528,9 @@
     // --- 4. 勞退新制個人專戶（屬於個人私產）---
     let labPenMonthly = 0;
     if (yLab >= 15) {
-      // 年金終值複利精算：年化 3%，每年投入 (月薪 * 提撥率 * 12)
       const annualContrib = sLabPen * rateLabPen * 12;
       const r = 0.03;
-      // 等比級數終值公式：S = PMT * [ (1+r)^N - 1 ] / r
       const totalFund = annualContrib * (Math.pow(1 + r, yLab) - 1) / r;
-      // 內政部生命表除數折算月領
       labPenMonthly = totalFund / (21.39 * 12);
       qualLogs.push(`✓ 勞退個人專戶：累計滿 15 年，月提繳 ${formatMoney(sLabPen * rateLabPen)}，65歲起月領約 ${formatMoney(labPenMonthly)}。`);
     } else if (yLab > 0) {
@@ -546,25 +565,25 @@
     // 每月年金收入合計
     const totalMonthlyPension = govPenMonthly + govInsMonthly + labInsMonthly + labPenMonthly + natInsMonthly;
 
-    // 關鍵計算：每月收支差額（盈餘正數，赤字負數）
-    const monthlyNetBalance = totalMonthlyPension - targetMonthly;
+    // 每月收支餘絀（以通膨後之實質生活費為基準）
+    const monthlyNetBalance = totalMonthlyPension - targetMonthlyFuture;
 
-    // 專項儲備金需求
+    // 專項儲備金需求（經通膨膨脹後總額）
     const tourAnnual = parseFloat(document.getElementById('tourAnnual').value) || 0;
     const ltcMonthly = parseFloat(document.getElementById('ltcMonthly').value) || 0;
     const medFixed = parseFloat(document.getElementById('medFixed').value) || 0;
 
-    const capTour = tourAnnual * 10;
-    const capLTC = ltcMonthly * 12 * 7.5;
-    const capMed = medFixed;
-    const totalSpecificFunds = capTour + capLTC + capMed; // 三大專項合計
+    const capTour = (tourAnnual * 10) * infFactor;
+    const capLTC = (ltcMonthly * 12 * 7.5) * infFactor;
+    const capMed = medFixed * infFactor;
+    const totalSpecificFunds = capTour + capLTC + capMed;
 
     let capDailyGap = 0;
     let totalGapCapital = 0;
     let surplusTotalOffset = 0;
 
     if (monthlyNetBalance < 0) {
-      // 情況 A：入不敷出（存在基本開銷赤字）
+      // 情況 A：赤字
       const monthlyDeficit = Math.abs(monthlyNetBalance);
       capDailyGap = monthlyDeficit * 12 * yearsInRetire;
       totalGapCapital = capDailyGap + totalSpecificFunds;
@@ -572,14 +591,13 @@
       document.getElementById('rowSurplusOffset').style.display = 'none';
       document.getElementById('summaryCardBox').classList.remove('surplus-active');
       document.getElementById('summaryCardTitle').innerText = isStress ? '🔥 零政府年金！全額自籌總淨缺口：' : '退休應備總資本淨缺口：';
-      document.getElementById('totalGapCapitalHint').innerText = '包含日常開銷赤字與三大專項儲備金，需於退休前備齊。';
+      document.getElementById('totalGapCapitalHint').innerText = '包含日常開銷赤字與三大專項儲備金（已計入通膨），需於退休前備齊。';
     } else {
-      // 情況 B：年金大於基本生活費（存在每月盈餘！）
-      capDailyGap = 0; // 日常開銷已無缺口
+      // 情況 B：盈餘折抵
+      capDailyGap = 0;
       const monthlySurplus = monthlyNetBalance;
-      surplusTotalOffset = monthlySurplus * 12 * yearsInRetire; // 退休期間多領的年金終身總資本
+      surplusTotalOffset = monthlySurplus * 12 * yearsInRetire;
       
-      // 盈餘自動扣抵三大專項金
       totalGapCapital = Math.max(0, totalSpecificFunds - surplusTotalOffset);
 
       document.getElementById('rowSurplusOffset').style.display = 'flex';
@@ -587,19 +605,19 @@
       
       if (totalGapCapital === 0) {
         document.getElementById('summaryCardBox').classList.add('surplus-active');
-        document.getElementById('summaryCardTitle').innerText = '🎉 恭喜！高薪資與年金已完全覆蓋生活與專項開銷：';
-        document.getElementById('totalGapCapitalHint').innerText = `每月年金盈餘 ${formatMoney(monthlySurplus)} 換算終身累積達 ${formatMoney(surplusTotalOffset)}，已完全吸收旅遊、長照與醫療準備金，退休淨缺口降為 $0！`;
+        document.getElementById('summaryCardTitle').innerText = '🎉 恭喜！高薪資與年金已完全覆蓋通膨後生活與專項：';
+        document.getElementById('totalGapCapitalHint').innerText = `每月年金盈餘 ${formatMoney(monthlySurplus)} 換算終身累積達 ${formatMoney(surplusTotalOffset)}，已完全抵沖通膨後的專項金，退休淨缺口降為 $0！`;
       } else {
         document.getElementById('summaryCardBox').classList.remove('surplus-active');
-        document.getElementById('summaryCardTitle').innerText = '退休應備總資本淨缺口（已由薪資年金盈餘折抵）：';
-        document.getElementById('totalGapCapitalHint').innerText = `每月多出的年金盈餘 ${formatMoney(monthlySurplus)} 已為您抵扣 ${formatMoney(surplusTotalOffset)} 的專項需求，剩餘淨缺口顯著縮小！`;
+        document.getElementById('summaryCardTitle').innerText = '退休應備總資本淨缺口（已由年金盈餘折抵）：';
+        document.getElementById('totalGapCapitalHint').innerText = `每月多出的年金盈餘 ${formatMoney(monthlySurplus)} 已抵扣 ${formatMoney(surplusTotalOffset)} 的通膨專項需求，剩餘淨缺口大幅縮小！`;
       }
     }
 
-    // 全域保存供滑桿與情境按鈕取用
+    // 全域保存供滑桿取用
     window._CURRENT_TOTAL_GAP = totalGapCapital;
 
-    // 更新畫面文字
+    // 更新數值顯示
     document.getElementById('valGovPen').innerText = isStress ? '$0 (模擬歸零)' : formatMoney(govPenMonthly);
     document.getElementById('valGovIns').innerText = isStress ? '$0 (模擬歸零)' : formatMoney(govInsMonthly);
     document.getElementById('valLabIns').innerText = isStress ? '$0 (模擬歸零)' : formatMoney(labInsMonthly);
@@ -656,7 +674,6 @@
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
-    // 如果有盈餘折抵，按順序動態折算圖表呈現
     let adjTour = tour;
     let adjLTC = ltc;
     let adjMed = med;
