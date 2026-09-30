@@ -113,6 +113,10 @@
     .gap-red { color: var(--danger); }
     .gap-green { color: var(--success); }
 
+    /* 圓餅圖獨立區塊 */
+    .pie-section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center; }
+    @media (max-width: 800px) { .pie-section-grid { grid-template-columns: 1fr; } }
+
     /* 底部跨欄儀表板 */
     .dashboard-full { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
     .dashboard-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 24px; align-items: center; margin-top: 14px; }
@@ -165,7 +169,7 @@
     </div>
   </div>
 
-  <!-- 上半部：高度完全對稱的雙欄對齊配置 -->
+  <!-- 上半部：左右高度完全對稱的雙欄配置 -->
   <div class="grid-2col">
     <!-- 左欄：基本條件與年資輸入 -->
     <div class="col-left">
@@ -293,7 +297,7 @@
       </div>
     </div>
 
-    <!-- 右欄：年金推估與終身總資本缺口分析（填滿對齊） -->
+    <!-- 右欄：年金推估與終身總資本缺口分析數據 -->
     <div class="col-right" style="display: flex; flex-direction: column; justify-content: space-between;">
       <!-- 年資資格檢視 -->
       <div class="card" style="margin-bottom: 16px;">
@@ -337,7 +341,7 @@
         </div>
       </div>
 
-      <!-- 總資本缺口分析與圓餅圖 -->
+      <!-- 總資本缺口摘要 -->
       <div class="card" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 0;">
         <div>
           <div class="card-title">全方位終身退休資本總缺口（含通膨終值）</div>
@@ -367,17 +371,12 @@
             <div class="result-label" style="color: var(--success); font-weight: 700;">💎 年金每月盈餘終身折抵</div>
             <div class="result-val" id="valCapSurplusOffset" style="color: var(--success); font-weight: 800;">-$0</div>
           </div>
-
-          <div class="summary-card" id="summaryCardBox">
-            <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);" id="summaryCardTitle">退休應備總資本淨缺口：</div>
-            <div class="gap-highlight" id="valTotalGapCapital">$0</div>
-            <div class="hint" id="totalGapCapitalHint">扣除現行年金與既有資產終值後，需於退休前透過自主理財補足之總額。</div>
-          </div>
         </div>
 
-        <!-- 缺口圓餅圖 -->
-        <div style="position: relative; height: 180px; margin-top: 10px;">
-          <canvas id="gapPieChart"></canvas>
+        <div class="summary-card" id="summaryCardBox" style="margin-top: 10px;">
+          <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);" id="summaryCardTitle">退休應備總資本淨缺口：</div>
+          <div class="gap-highlight" id="valTotalGapCapital">$0</div>
+          <div class="hint" id="totalGapCapitalHint">扣除現行年金與既有資產終值後，需於退休前透過自主理財補足之總額。</div>
         </div>
       </div>
     </div>
@@ -472,10 +471,35 @@
     </div>
   </div>
 
-  <!-- 下半部：大型全寬總結儀表板（徹底填滿右下角空白，附複利成長曲線圖） -->
+  <!-- 【全新獨立區塊】：放置於儲備金與定期定額之間的「總缺口分佈圓餅圖」 -->
+  <div class="card" style="margin-bottom: 20px;">
+    <div class="card-title">
+      <span>5. 全方位退休應備資本與淨缺口分佈視覺化</span>
+      <span style="font-size: 0.8rem; color: var(--muted);">各專項與生活費於退休時點所需金額比重</span>
+    </div>
+    
+    <div class="pie-section-grid">
+      <!-- 左側：環形圓餅圖 -->
+      <div style="position: relative; height: 230px;">
+        <canvas id="gapPieChart"></canvas>
+      </div>
+      <!-- 右側：結構解析說明 -->
+      <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 16px;">
+        <div style="font-size: 0.92rem; font-weight: 700; color: var(--primary); margin-bottom: 8px;">📊 退休資本結構觀察指標</div>
+        <div style="font-size: 0.84rem; color: var(--text); line-height: 1.6;">
+          • 圓餅圖已將<strong>通貨膨脹率</strong>帶入各項終值計算。<br>
+          • 若開啟年金盈餘或既有資產折抵，系統將按比例優先消除赤字。<br>
+          • 未勾選之專項會自動自圖表中剔除，確保聚焦在您在意的目標。
+        </div>
+        <div id="pieStatusBadgeText" style="margin-top: 10px; font-size: 0.82rem; font-weight: 600; color: var(--secondary);"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 最底層：大型全寬總結儀表板（定期定額與複利成長曲線圖） -->
   <div class="dashboard-full">
     <div class="card-title">
-      <span>5. 退休前每月定期定額投入試算與資產成長軌跡</span>
+      <span>6. 退休前每月定期定額投入試算與資產成長軌跡</span>
       <span style="font-size: 0.82rem; color: var(--secondary);" id="yearsToInvestBadge">投入期：27 年</span>
     </div>
     
@@ -522,7 +546,7 @@
         </div>
       </div>
 
-      <!-- 右側：資產複利累積趨勢圖（填滿右下角空白） -->
+      <!-- 右側：資產複利累積趨勢圖 -->
       <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 10px; padding: 14px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
           <span style="font-size: 0.85rem; font-weight: 700; color: var(--primary);">📈 退休前資產複利增長軌跡</span>
@@ -838,10 +862,12 @@
       document.getElementById('summaryCardBox').classList.add('surplus-active');
       document.getElementById('summaryCardTitle').innerText = '🎉 恭喜！年金與既有資產已完全覆蓋所有退休需求：';
       document.getElementById('totalGapCapitalHint').innerText = `您的既有資產滾存終值達 ${formatMoney(totalExistingAssetFV)}，加上年金給付，已完全覆蓋所有生活開銷與專項基金，目前淨缺口為 $0！`;
+      document.getElementById('pieStatusBadgeText').innerText = `✨ 狀態：資金充足，現有資產已全數覆蓋專項與日常需求。`;
     } else {
       document.getElementById('summaryCardBox').classList.remove('surplus-active');
       document.getElementById('summaryCardTitle').innerText = isStress ? '🔥 零政府年金！全額自籌總淨缺口：' : '退休應備總資本淨缺口：';
       document.getElementById('totalGapCapitalHint').innerText = `已扣除年金與既有資產終值 ${formatMoney(totalExistingAssetFV)}，剩餘淨缺口需於退休前定期定額補足。`;
+      document.getElementById('pieStatusBadgeText').innerText = `📌 剩餘應備淨缺口：${formatMoney(finalTotalGapCapital)}（需於退休前完成累積）`;
     }
 
     // 全域保存供滑桿取用
@@ -895,7 +921,7 @@
     // 審核日誌清單
     document.getElementById('qualCheckList').innerHTML = qualLogs.map(item => `<div>${item}</div>`).join('');
 
-    // 安全更新圓餅圖
+    // 安全更新居中獨立區塊的圓餅圖
     try {
       updatePieChart(capDailyGap, capTour, capLTC, capMed, surplusTotalOffset + totalExistingAssetFV);
     } catch (e) {
@@ -944,13 +970,13 @@
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } }
+          legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } }
         }
       }
     });
   }
 
-  // 繪製資產複利增長軌跡折線圖（填滿右下角空白）
+  // 繪製資產複利增長軌跡折線圖
   function updateGrowthLineChart(monthlyPmt, investRate, years, curAge, retAge) {
     const canvas = document.getElementById('growthLineChart');
     if (!canvas) return;
@@ -959,7 +985,6 @@
     const currSavings = parseFloat(document.getElementById('currSavings').value) || 0;
     const currInvest = parseFloat(document.getElementById('currInvest').value) || 0;
     const currInvestRate = (parseFloat(document.getElementById('currInvestRate').value) || 0) / 100;
-    const targetGap = window._CURRENT_TOTAL_GAP || 0;
 
     const labels = [];
     const principalSeries = [];
@@ -969,11 +994,9 @@
     for (let y = 0; y <= years; y += (y === years || y % step === 0 ? 1 : step)) {
       labels.push(`${Math.round(curAge + y)}歲`);
       
-      // 既有資產成長
       const savPart = currSavings * Math.pow(1 + 0.015, y);
       const invPart = currInvest * Math.pow(1 + currInvestRate, y);
       
-      // 定期定額投入與複利
       const nMonths = y * 12;
       const principalContrib = monthlyPmt * nMonths;
       let dcaFutureVal = 0;
