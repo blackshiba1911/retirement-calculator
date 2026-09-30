@@ -21,29 +21,29 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
     body { background-color: var(--bg); color: var(--text); padding: 24px 16px; }
-    .container { max-width: 1180px; margin: 0 auto; }
+    .container { max-width: 1200px; margin: 0 auto; }
     
     header { margin-bottom: 20px; }
     header h1 { font-size: 1.75rem; color: var(--primary); }
     header p { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
 
     /* 官方查詢專區連結卡片（二合一） */
-    .portal-section { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; }
-    .portal-title { font-size: 0.95rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-    .portal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .portal-section { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; }
+    .portal-title { font-size: 0.92rem; font-weight: 700; color: var(--primary); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .portal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     @media (max-width: 680px) { .portal-grid { grid-template-columns: 1fr; } }
-    .portal-btn { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 16px; text-decoration: none; color: var(--text); transition: all 0.2s ease; }
+    .portal-btn { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 14px; text-decoration: none; color: var(--text); transition: all 0.2s ease; }
     .portal-btn:hover { border-color: var(--secondary); background: #f0f9ff; transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-    .portal-btn-title { font-size: 0.95rem; font-weight: 700; color: var(--secondary); display: flex; align-items: center; gap: 6px; }
-    .portal-btn-desc { font-size: 0.78rem; color: var(--muted); margin-top: 5px; line-height: 1.4; }
+    .portal-btn-title { font-size: 0.9rem; font-weight: 700; color: var(--secondary); display: flex; align-items: center; gap: 6px; }
+    .portal-btn-desc { font-size: 0.75rem; color: var(--muted); margin-top: 4px; line-height: 1.4; }
 
     /* 壓力測試開關卡片 */
     .stress-box {
       background: #fef2f2;
       border: 2px dashed #fca5a5;
       border-radius: 10px;
-      padding: 14px 16px;
-      margin-bottom: 18px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -52,105 +52,92 @@
       transition: background 0.2s;
     }
     .stress-box:hover { background: #fee2e2; }
-    .stress-box input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--danger); }
-    .stress-label { font-size: 0.95rem; font-weight: 700; color: #991b1b; }
-    .stress-desc { font-size: 0.76rem; color: #b91c1c; margin-top: 3px; }
+    .stress-box input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--danger); }
+    .stress-label { font-size: 0.92rem; font-weight: 700; color: #991b1b; }
+    .stress-desc { font-size: 0.74rem; color: #b91c1c; margin-top: 2px; }
 
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    @media (max-width: 960px) { .grid { grid-template-columns: 1fr; } }
+    /* 主要版面配置 */
+    .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: stretch; margin-bottom: 20px; }
+    @media (max-width: 960px) { .grid-2col { grid-template-columns: 1fr; } }
+
+    .card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 18px 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    .card:last-child { margin-bottom: 0; }
+    .card-title { font-size: 1.05rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--border); padding-bottom: 8px; }
     
-    .card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 20px; }
-    .card-title { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--border); padding-bottom: 8px; }
-    
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 6px; color: var(--text); }
-    .form-group input, .form-group select { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.92rem; background: #ffffff; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.86rem; font-weight: 600; margin-bottom: 5px; color: var(--text); }
+    .form-group input, .form-group select { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; background: #ffffff; }
     .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--secondary); box-shadow: 0 0 0 2px rgba(2,132,199,0.2); }
-    .hint { font-size: 0.76rem; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+    .hint { font-size: 0.74rem; color: var(--muted); margin-top: 3px; line-height: 1.35; }
 
-    /* 專項金模組外框（支援勾選啟用/反灰禁用） */
+    /* 三大專項橫排 3 欄並列區 */
+    .spec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 10px; }
+    @media (max-width: 860px) { .spec-grid { grid-template-columns: 1fr; } }
+    
     .module-card {
       background: #f8fafc;
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 14px;
-      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       transition: all 0.25s ease;
     }
     .module-header {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
+      gap: 8px;
+      margin-bottom: 10px;
       cursor: pointer;
       user-select: none;
     }
-    .module-header input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-      accent-color: var(--secondary);
-    }
-    .module-title {
-      font-size: 0.92rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-    .module-card.disabled {
-      opacity: 0.55;
-      background: #f1f5f9;
-    }
-    .module-card.disabled input:not([type="checkbox"]),
-    .module-card.disabled select {
-      pointer-events: none;
-      background: #e2e8f0;
-    }
+    .module-header input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--secondary); }
+    .module-title { font-size: 0.92rem; font-weight: 700; color: var(--primary); }
+    .module-card.disabled { opacity: 0.55; background: #f1f5f9; }
+    .module-card.disabled input:not([type="checkbox"]), .module-card.disabled select { pointer-events: none; background: #e2e8f0; }
 
     .status-badge { font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; font-weight: bold; }
     .badge-pass { background: #dcfce7; color: var(--success); }
     .badge-stress { background: #fee2e2; color: var(--danger); }
 
-    .result-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px dashed var(--border); }
+    .result-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--border); }
     .result-item:last-child { border-bottom: none; }
-    .result-label { font-size: 0.92rem; font-weight: 500; }
-    .result-val { font-size: 1.05rem; font-weight: 700; color: var(--primary); }
+    .result-label { font-size: 0.9rem; font-weight: 500; }
+    .result-val { font-size: 1.02rem; font-weight: 700; color: var(--primary); }
 
-    .summary-card { background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 10px; padding: 16px; margin-top: 14px; transition: all 0.3s; }
+    .summary-card { background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 10px; padding: 14px 16px; margin-top: 12px; transition: all 0.3s; }
     .summary-card.stress-active { background: #fff1f2; border-color: #fecdd3; }
     .summary-card.surplus-active { background: #f0fdfa; border-color: #99f6e4; }
-    .gap-highlight { font-size: 1.6rem; font-weight: 800; margin: 6px 0; }
+    .gap-highlight { font-size: 1.5rem; font-weight: 800; margin: 4px 0; }
     .gap-red { color: var(--danger); }
     .gap-green { color: var(--success); }
 
-    /* 可點選切換的情境卡片樣式 */
-    .scenarios-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+    /* 底部跨欄儀表板 */
+    .dashboard-full { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .dashboard-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 24px; align-items: center; margin-top: 14px; }
+    @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+    .scenarios-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
     @media (max-width: 600px) { .scenarios-grid { grid-template-columns: 1fr 1fr; } }
     
     .scenario-box { 
       background: #ffffff; 
       border: 2px solid var(--border); 
       border-radius: 10px; 
-      padding: 12px; 
+      padding: 10px; 
       text-align: center; 
       cursor: pointer; 
       transition: all 0.2s ease; 
       user-select: none;
     }
-    .scenario-box:hover { 
-      border-color: var(--secondary); 
-      transform: translateY(-2px); 
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
-    }
-    .scenario-box.active { 
-      border-color: var(--secondary); 
-      background: #eff6ff; 
-      box-shadow: 0 0 0 2px rgba(2,132,199,0.25); 
-    }
-    .scenario-rate { font-size: 0.82rem; font-weight: 700; color: var(--secondary); }
-    .scenario-val { font-size: 1.15rem; font-weight: 800; color: var(--text); margin: 5px 0; }
-    .scenario-desc { font-size: 0.72rem; color: var(--muted); }
+    .scenario-box:hover { border-color: var(--secondary); transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .scenario-box.active { border-color: var(--secondary); background: #eff6ff; box-shadow: 0 0 0 2px rgba(2,132,199,0.25); }
+    .scenario-rate { font-size: 0.8rem; font-weight: 700; color: var(--secondary); }
+    .scenario-val { font-size: 1.1rem; font-weight: 800; color: var(--text); margin: 4px 0; }
+    .scenario-desc { font-size: 0.7rem; color: var(--muted); }
 
-    .rule-note { font-size: 0.78rem; background: #fffbeb; border-left: 4px solid var(--accent); padding: 8px 12px; margin-top: 10px; border-radius: 0 4px 4px 0; color: #92400e; line-height: 1.5; }
+    .rule-note { font-size: 0.76rem; background: #fffbeb; border-left: 4px solid var(--accent); padding: 8px 12px; margin-top: 10px; border-radius: 0 4px 4px 0; color: #92400e; line-height: 1.45; }
   </style>
 </head>
 <body>
@@ -158,7 +145,7 @@
 <div class="container">
   <header>
     <h1>台灣跨職域退休金與全方位缺口精算系統</h1>
-    <p>涵蓋三軌年資審核、既有資產複利折抵、專項選配、通膨終值與定期定額規劃</p>
+    <p>涵蓋三軌年資審核、既有資產複利滾存、自選專項準備、通膨終值與雙向資產平衡對齊分析</p>
   </header>
 
   <!-- 官方個人查詢快捷入口（雙軌整併版） -->
@@ -169,22 +156,23 @@
     <div class="portal-grid">
       <a href="https://edesk.bli.gov.tw/na/" target="_blank" rel="noopener noreferrer" class="portal-btn">
         <div class="portal-btn-title">🔍 勞動部勞保局 e 化服務系統（個人登入）</div>
-        <div class="portal-btn-desc">一站式整合查詢：勞保個人投保年資與薪資級距、勞退新制個人專戶累積金額（含雇主提繳與自提收益）、國民年金納保紀錄。</div>
+        <div class="portal-btn-desc">一站式整合查詢：勞保投保年資與薪資級距、勞退新制專戶累積金額、國民年金納保明細。</div>
       </a>
       <a href="https://iocs.mocs.gov.tw/portal/index.aspx" target="_blank" rel="noopener noreferrer" class="portal-btn">
         <div class="portal-btn-title">🎓 公教人員退休撫卹與公保查詢專區</div>
-        <div class="portal-btn-desc">銓敘部網路作業與公保專區：查詢公教人員退撫年資、保留年資資格、公教人員保險（公保）養老給付試算。</div>
+        <div class="portal-btn-desc">銓敘部網路作業與公保專區：查詢公教退撫年資、保留年資資格、公教人員保險養老給付試算。</div>
       </a>
     </div>
   </div>
 
-  <div class="grid">
-    <!-- 左欄：參數輸入區 -->
-    <div class="col">
+  <!-- 上半部：高度完全對稱的雙欄對齊配置 -->
+  <div class="grid-2col">
+    <!-- 左欄：基本條件與年資輸入 -->
+    <div class="col-left">
       <!-- 1. 年齡與通膨基準 -->
       <div class="card">
-        <div class="card-title">1. 年齡時程、生命表與通貨膨脹率</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="card-title">1. 年齡時程與通貨膨脹率</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div class="form-group">
             <label>目前年齡（歲）</label>
             <input type="number" id="curAge" value="38" min="20" max="80" />
@@ -194,9 +182,9 @@
             <input type="number" id="retAge" value="65" min="50" max="75" />
           </div>
         </div>
-        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 12px;">
+        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px;">
           <div class="form-group">
-            <label>性別（生命表餘命基準）</label>
+            <label>性別（生命表餘命）</label>
             <select id="genderSelect">
               <option value="male">男性（平均約 77.5 歲）</option>
               <option value="female" selected>女性（平均約 84.1 歲）</option>
@@ -208,202 +196,116 @@
             <input type="number" id="lifeExp" value="85" min="65" max="105" />
           </div>
         </div>
-        <!-- 通膨率輸入 -->
-        <div class="form-group" style="background: #f8fafc; border: 1px solid var(--border); padding: 10px 12px; border-radius: 8px;">
+        <div class="form-group" style="background: #f8fafc; border: 1px solid var(--border); padding: 8px 10px; border-radius: 6px; margin-bottom: 0;">
           <label style="color: var(--secondary); display: flex; justify-content: space-between;">
             <span>📈 預估年化通貨膨脹率（%）</span>
-            <span id="inflationFactorText" style="font-weight: normal; color: var(--muted); font-size: 0.78rem;"></span>
+            <span id="inflationFactorText" style="font-weight: normal; color: var(--muted); font-size: 0.75rem;"></span>
           </label>
           <input type="number" id="inflationRate" value="2.0" step="0.1" min="0" max="10" />
           <div class="hint" id="ageSummaryHint">距退休尚有 27 年；退休後生活約 20 年。</div>
         </div>
       </div>
 
-      <!-- 2. 既有資產與自訂投資報酬率（全新模組） -->
+      <!-- 2. 目前已備既有資產與滾存 -->
       <div class="card">
-        <div class="card-title">2. 目前已備既有資產與滾存設定</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="card-title">2. 目前已備資產與複利滾存</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div class="form-group">
-            <label>現有銀行存款 / 定存（現值元）</label>
+            <label>現有存款儲蓄（現值元）</label>
             <input type="number" id="currSavings" value="500000" step="50000" />
-            <div class="hint">預設年化收益 1.5% 穩健定存利率。</div>
+            <div class="hint">預設年化 1.5% 定存利率。</div>
           </div>
           <div class="form-group">
-            <label>現有投資資產（股票/基金/ETF 現值）</label>
+            <label>現有投資資產（現值元）</label>
             <input type="number" id="currInvest" value="1000000" step="50000" />
-            <div class="hint">已投入金融市場之本金與現值。</div>
+            <div class="hint">股票、ETF、基金現值。</div>
           </div>
         </div>
-        <div class="form-group" style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 10px 12px; border-radius: 8px;">
+        <div class="form-group" style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 8px 10px; border-radius: 6px; margin-bottom: 0;">
           <label style="color: var(--success); display: flex; justify-content: space-between;">
-            <span>📊 既有投資部位預期年化報酬率（%）</span>
-            <span id="currAssetFutureValText" style="font-weight: 700; color: var(--success); font-size: 0.85rem;"></span>
+            <span>📊 既有投資預期年化報酬率（%）</span>
+            <span id="currAssetFutureValText" style="font-weight: 700; color: var(--success); font-size: 0.8rem;"></span>
           </label>
           <input type="number" id="currInvestRate" value="6.0" step="0.5" min="0" max="15" />
-          <div class="hint" style="color: #166534;">此資產將以此報酬率複利滾存至退休年齡，直接抵減最終應備總缺口！</div>
+          <div class="hint" style="color: #166534;">退休前以此報酬率複利累積，直接折抵應備總缺口。</div>
         </div>
       </div>
 
-      <!-- 3. 職涯年資盤點與壓力測試開關 -->
+      <!-- 3. 各軌年資盤點與薪資 -->
       <div class="card">
-        <div class="card-title">3. 跨職域各軌年資盤點</div>
-        
-        <!-- 勞保/政府年金破產極限自籌開關 -->
+        <div class="card-title">3. 跨職域年資與薪資級距</div>
+        <!-- 壓力測試開關 -->
         <label class="stress-box" for="stressMode">
           <input type="checkbox" id="stressMode" />
           <div>
-            <div class="stress-label">🔥 壓力測試：假設政府年金（勞保/公保/國保）破產或歸零</div>
-            <div class="stress-desc">模擬第一層確定給付全歸零，僅採計個人「勞退專戶」與「既有資產」，考驗自籌防護力！</div>
+            <div class="stress-label">🔥 壓力測試：假設政府年金（勞保/公保/國保）歸零</div>
+            <div class="stress-desc">模擬第一層社會保險全歸零，僅採計個人「勞退專戶」與「既有資產」！</div>
           </div>
         </label>
 
-        <div class="form-group">
-          <label>公立學校 / 公務人員年資（年）</label>
-          <input type="number" id="yearsGov" value="10" min="0" max="45" step="0.5" />
-          <div class="hint">未滿 5 年離職無法保留月退資格；滿 5 年可於 65 歲併計請領。</div>
-        </div>
-        <div class="form-group">
-          <label>待業 / 育嬰停薪（國民年金）年資（年）</label>
-          <input type="number" id="yearsNat" value="2" min="0" max="45" step="0.5" />
-          <div class="hint">未投保職域保險時之空窗年資，滿 65 歲起支。</div>
-        </div>
-        <div class="form-group">
-          <label>補習班 / 民間受僱（勞保＋勞退）年資（年）</label>
-          <input type="number" id="yearsLab" value="18" min="0" max="45" step="0.5" />
-          <div class="hint">勞保原則需滿 15 年，或與國保合計滿 15 年始可月領。</div>
-        </div>
-      </div>
-
-      <!-- 4. 薪資級距與生活開銷 -->
-      <div class="card">
-        <div class="card-title">4. 薪資級距與退休後生活費</div>
-        <div class="form-group">
-          <label>公教離職時月本俸（或相當職級薪額）</label>
-          <input type="number" id="govSalary" value="45000" step="1000" />
-        </div>
-        <div class="form-group">
-          <label>勞保最高 60 個月平均投保薪資</label>
-          <input type="number" id="labSalary" value="45800" max="45800" step="100" />
-        </div>
-        <div class="form-group">
-          <label>勞退新制平均月提繳工資</label>
-          <input type="number" id="labPenSalary" value="50000" step="5000" />
-          <div class="hint">試著調高此金額，多出的退休金將自動扣抵下方的旅遊金、長照金與醫療金！</div>
-        </div>
-        <div class="form-group">
-          <label>勞退提撥率（雇主 6% + 自提 %）</label>
-          <select id="labRate">
-            <option value="0.06">僅雇主提撥 6%</option>
-            <option value="0.12" selected>雇主 6% + 個人自提 6% (共 12%)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>預期退休後每月基本生活費（今日現值購買力）</label>
-          <input type="number" id="targetCost" value="50000" step="1000" />
-          <div class="hint" id="targetCostInflatedHint" style="color: var(--secondary); font-weight: 600;"></div>
-        </div>
-      </div>
-
-      <!-- 5. 三大專項儲備金（模組化勾選 + 旅遊長照年限客製） -->
-      <div class="card">
-        <div class="card-title">5. 樂活旅遊、長照與醫療專項儲備（自由選配）</div>
-        
-        <!-- 模組 A：樂活旅遊金 -->
-        <div class="module-card" id="cardTour">
-          <label class="module-header" for="enableTour">
-            <input type="checkbox" id="enableTour" checked />
-            <span class="module-title">✈️ 納入「樂活旅遊金」規劃</span>
-          </label>
-          <div class="module-body">
-            <div class="form-group" style="margin-bottom: 10px;">
-              <label>每年旅遊預算（今日現值元）</label>
-              <input type="number" id="tourAnnual" value="150000" step="10000" />
-            </div>
-            <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px; align-items: flex-end;">
-              <div class="form-group" style="margin-bottom: 0;">
-                <label>預計享受旅遊年限</label>
-                <select id="tourPresetSelect">
-                  <option value="5">黃金活力期（5 年）</option>
-                  <option value="10" selected>健康充沛期（10 年）</option>
-                  <option value="15">深度漫遊期（15 年）</option>
-                  <option value="custom">自訂年數 ✎</option>
-                </select>
-              </div>
-              <div class="form-group" style="margin-bottom: 0;">
-                <label>採計年數（年）</label>
-                <input type="number" id="tourYears" value="10" min="1" max="30" step="1" />
-              </div>
-            </div>
-            <div class="hint" id="tourSummaryHint" style="margin-top: 6px; color: var(--secondary); font-weight: 500;">
-              累計旅遊預備：共 10 年
-            </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="form-group">
+            <label>公立學校 / 公務年資（年）</label>
+            <input type="number" id="yearsGov" value="10" min="0" max="45" step="0.5" />
+          </div>
+          <div class="form-group">
+            <label>公教離職月本俸（元）</label>
+            <input type="number" id="govSalary" value="45000" step="1000" />
           </div>
         </div>
 
-        <!-- 模組 B：長期照顧準備金 -->
-        <div class="module-card" id="cardLTC">
-          <label class="module-header" for="enableLTC">
-            <input type="checkbox" id="enableLTC" checked />
-            <span class="module-title">🦽 納入「長期照顧準備金」規劃</span>
-          </label>
-          <div class="module-body">
-            <div class="form-group" style="margin-bottom: 10px;">
-              <label>每月看護/機構/耗材預算（今日現值元）</label>
-              <input type="number" id="ltcMonthly" value="40000" step="5000" />
-            </div>
-            <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px; align-items: flex-end;">
-              <div class="form-group" style="margin-bottom: 0;">
-                <label>長照預估年限情境</label>
-                <select id="ltcPresetSelect">
-                  <option value="3">輕度 / 短期照護（3 年）</option>
-                  <option value="7.5" selected>衛福部國人平均（7.5 年）</option>
-                  <option value="10">失智 / 臥床常態（10 年）</option>
-                  <option value="15">高規格完整照護（15 年）</option>
-                  <option value="custom">自訂年數 ✎</option>
-                </select>
-              </div>
-              <div class="form-group" style="margin-bottom: 0;">
-                <label>採計年數（年）</label>
-                <input type="number" id="ltcYears" value="7.5" min="0.5" max="30" step="0.5" />
-              </div>
-            </div>
-            <div class="hint" id="ltcSummaryHint" style="margin-top: 6px; color: var(--secondary); font-weight: 500;">
-              預估長照總月數：90 個月（7.5 年）
-            </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="form-group">
+            <label>民間受僱勞保＋勞退（年）</label>
+            <input type="number" id="yearsLab" value="18" min="0" max="45" step="0.5" />
+          </div>
+          <div class="form-group">
+            <label>勞保最高 60 月平均薪資</label>
+            <input type="number" id="labSalary" value="45800" max="45800" step="100" />
           </div>
         </div>
 
-        <!-- 模組 C：醫療重症準備金 -->
-        <div class="module-card" id="cardMed">
-          <label class="module-header" for="enableMed">
-            <input type="checkbox" id="enableMed" checked />
-            <span class="module-title">🏥 納入「醫療重症準備金（定額專款）」規劃</span>
-          </label>
-          <div class="module-body">
-            <div class="form-group" style="margin-bottom: 0;">
-              <label>自費高額醫療準備金（今日現值元）</label>
-              <input type="number" id="medFixed" value="1500000" step="100000" />
-              <div class="hint">因應自費標靶、達文西手術、高額自費醫材與新式療法專款。</div>
-            </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="form-group">
+            <label>國民年金空窗年資（年）</label>
+            <input type="number" id="yearsNat" value="2" min="0" max="45" step="0.5" />
+          </div>
+          <div class="form-group">
+            <label>勞退專戶平均月提繳工資</label>
+            <input type="number" id="labPenSalary" value="50000" step="5000" />
           </div>
         </div>
 
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>勞退提撥率</label>
+            <select id="labRate">
+              <option value="0.06">僅雇主提撥 6%</option>
+              <option value="0.12" selected>雇主 6% + 個人自提 6% (共 12%)</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>預期月基本生活費（現值元）</label>
+            <input type="number" id="targetCost" value="50000" step="1000" />
+          </div>
+        </div>
+        <div class="hint" id="targetCostInflatedHint" style="color: var(--secondary); font-weight: 600; margin-top: 6px;"></div>
       </div>
     </div>
 
-    <!-- 右欄：精算結果與視覺化分析 -->
-    <div class="col">
+    <!-- 右欄：年金推估與終身總資本缺口分析（填滿對齊） -->
+    <div class="col-right" style="display: flex; flex-direction: column; justify-content: space-between;">
       <!-- 年資資格檢視 -->
-      <div class="card">
+      <div class="card" style="margin-bottom: 16px;">
         <div class="card-title">
-          <span>年資請領資格判定</span>
+          <span>法令資格審核狀態</span>
           <span class="status-badge" id="overallStatusBadge">法令審核完成</span>
         </div>
-        <div id="qualCheckList" style="font-size: 0.85rem; line-height: 1.6;"></div>
+        <div id="qualCheckList" style="font-size: 0.82rem; line-height: 1.55;"></div>
       </div>
 
-      <!-- 每月法定退休給付明細 -->
-      <div class="card">
+      <!-- 每月法定退休年金明細 -->
+      <div class="card" style="margin-bottom: 16px;">
         <div class="card-title">每月法定退休年金推估 (65歲起支)</div>
         <div class="result-item">
           <div class="result-label" id="lblGovPen">公教退撫月退休金</div>
@@ -414,7 +316,7 @@
           <div class="result-val" id="valGovIns">$0</div>
         </div>
         <div class="result-item">
-          <div class="result-label" id="lblLabIns">勞保老年年金 (第1/2式擇優)</div>
+          <div class="result-label" id="lblLabIns">勞保老年年金 (擇優)</div>
           <div class="result-val" id="valLabIns">$0</div>
         </div>
         <div class="result-item">
@@ -425,67 +327,165 @@
           <div class="result-label" id="lblNatIns">國民年金老年年金 (B式)</div>
           <div class="result-val" id="valNatIns">$0</div>
         </div>
-        <div class="result-item" style="background:#f1f5f9; padding: 10px 8px; border-radius: 6px; margin-top: 8px;">
+        <div class="result-item" style="background:#f1f5f9; padding: 8px 10px; border-radius: 6px; margin-top: 6px;">
           <div class="result-label" style="font-weight: 700; color: var(--primary);" id="lblTotalMonthly">每月年金收入合計</div>
           <div class="result-val" style="color: var(--primary);" id="valTotalMonthly">$0</div>
         </div>
-        <div class="result-item" style="padding-top: 10px;">
+        <div class="result-item" style="padding-top: 8px;">
           <div class="result-label">每月基本生活收支餘絀（通膨調整後）</div>
           <div class="result-val" id="valMonthlyGap">$0</div>
         </div>
       </div>
 
-      <!-- 總資本缺口分析（雙向沖抵 + 既有資產抵扣） -->
-      <div class="card">
-        <div class="card-title">全方位終身退休資本總缺口（含通膨終值）</div>
-        <div class="result-item">
-          <div class="result-label">日常基本開銷終身需求缺口</div>
-          <div class="result-val" id="valCapDaily">$0</div>
-        </div>
-        <div class="result-item">
-          <div class="result-label" id="lblCapTour">樂活旅遊金儲備 (10年)</div>
-          <div class="result-val" id="valCapTour">$0</div>
-        </div>
-        <div class="result-item">
-          <div class="result-label" id="lblCapLTC">長期照顧專項金 (7.5年)</div>
-          <div class="result-val" id="valCapLTC">$0</div>
-        </div>
-        <div class="result-item">
-          <div class="result-label" id="lblCapMed">醫療重症準備金</div>
-          <div class="result-val" id="valCapMed">$0</div>
-        </div>
-        <!-- 顯示既有資產滾存終值折抵額 -->
-        <div class="result-item" id="rowAssetOffset" style="background: #f0fdf4; padding: 8px 10px; border-radius: 6px; margin-top: 6px;">
-          <div class="result-label" style="color: var(--success); font-weight: 700;">💰 既有資產滾存至退休總值（直接折抵）</div>
-          <div class="result-val" id="valCapAssetOffset" style="color: var(--success); font-weight: 800;">-$0</div>
-        </div>
-        <!-- 顯示多餘年金扣抵專項金的項目 -->
-        <div class="result-item" id="rowSurplusOffset" style="display: none; background: #ecfdf5; padding: 8px 10px; border-radius: 6px; margin-top: 6px;">
-          <div class="result-label" style="color: var(--success); font-weight: 700;">💎 年金每月盈餘終身折抵額（抵扣專項）</div>
-          <div class="result-val" id="valCapSurplusOffset" style="color: var(--success); font-weight: 800;">-$0</div>
+      <!-- 總資本缺口分析與圓餅圖 -->
+      <div class="card" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 0;">
+        <div>
+          <div class="card-title">全方位終身退休資本總缺口（含通膨終值）</div>
+          <div class="result-item">
+            <div class="result-label">日常基本開銷終身需求缺口</div>
+            <div class="result-val" id="valCapDaily">$0</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label" id="lblCapTour">樂活旅遊金儲備 (10年)</div>
+            <div class="result-val" id="valCapTour">$0</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label" id="lblCapLTC">長期照顧專項金 (7.5年)</div>
+            <div class="result-val" id="valCapLTC">$0</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label" id="lblCapMed">醫療重症準備金</div>
+            <div class="result-val" id="valCapMed">$0</div>
+          </div>
+          <!-- 既有資產折抵 -->
+          <div class="result-item" id="rowAssetOffset" style="background: #f0fdf4; padding: 6px 10px; border-radius: 6px; margin-top: 4px;">
+            <div class="result-label" style="color: var(--success); font-weight: 700;">💰 既有資產滾存終值折抵</div>
+            <div class="result-val" id="valCapAssetOffset" style="color: var(--success); font-weight: 800;">-$0</div>
+          </div>
+          <!-- 年金盈餘折抵 -->
+          <div class="result-item" id="rowSurplusOffset" style="display: none; background: #ecfdf5; padding: 6px 10px; border-radius: 6px; margin-top: 4px;">
+            <div class="result-label" style="color: var(--success); font-weight: 700;">💎 年金每月盈餘終身折抵</div>
+            <div class="result-val" id="valCapSurplusOffset" style="color: var(--success); font-weight: 800;">-$0</div>
+          </div>
+
+          <div class="summary-card" id="summaryCardBox">
+            <div style="font-size: 0.88rem; font-weight: 600; color: var(--text);" id="summaryCardTitle">退休應備總資本淨缺口：</div>
+            <div class="gap-highlight" id="valTotalGapCapital">$0</div>
+            <div class="hint" id="totalGapCapitalHint">扣除現行年金與既有資產終值後，需於退休前透過自主理財補足之總額。</div>
+          </div>
         </div>
 
-        <div class="summary-card" id="summaryCardBox">
-          <div style="font-size: 0.9rem; font-weight: 600; color: var(--text);" id="summaryCardTitle">退休應備總資本淨缺口：</div>
-          <div class="gap-highlight" id="valTotalGapCapital">$0</div>
-          <div class="hint" id="totalGapCapitalHint">扣除現行年金與既有資產終值後，需於退休前透過自主理財補足之總額。</div>
-        </div>
-
-        <!-- 缺口分佈圓餅圖 -->
-        <div style="position: relative; height: 210px; margin-top: 16px;">
+        <!-- 缺口圓餅圖 -->
+        <div style="position: relative; height: 180px; margin-top: 10px;">
           <canvas id="gapPieChart"></canvas>
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- 定期定額試算（可點選切換情境） -->
-      <div class="card">
-        <div class="card-title">
-          <span>退休前每月定期定額投入試算</span>
-          <span style="font-size: 0.8rem; color: var(--secondary);" id="yearsToInvestBadge">投入期：27 年</span>
+  <!-- 中段：三大專項儲備金（整齊並列橫排 3 欄） -->
+  <div class="card" style="margin-bottom: 20px;">
+    <div class="card-title">4. 樂活旅遊、長期照顧與醫療專項儲備金（自由選配模組）</div>
+    <div class="spec-grid">
+      <!-- 模組 A：樂活旅遊金 -->
+      <div class="module-card" id="cardTour">
+        <label class="module-header" for="enableTour">
+          <input type="checkbox" id="enableTour" checked />
+          <span class="module-title">✈️ 納入「樂活旅遊金」規劃</span>
+        </label>
+        <div>
+          <div class="form-group">
+            <label>每年旅遊預算（今日現值）</label>
+            <input type="number" id="tourAnnual" value="150000" step="10000" />
+          </div>
+          <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 8px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>旅遊情境選單</label>
+              <select id="tourPresetSelect">
+                <option value="5">黃金活力期（5 年）</option>
+                <option value="10" selected>健康充沛期（10 年）</option>
+                <option value="15">深度漫遊期（15 年）</option>
+                <option value="custom">自訂年數 ✎</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>年數（年）</label>
+              <input type="number" id="tourYears" value="10" min="1" max="30" step="1" />
+            </div>
+          </div>
         </div>
+        <div class="hint" id="tourSummaryHint" style="margin-top: 8px; color: var(--secondary); font-weight: 500;">
+          累計旅遊預備：共 10 年
+        </div>
+      </div>
+
+      <!-- 模組 B：長期照顧準備金 -->
+      <div class="module-card" id="cardLTC">
+        <label class="module-header" for="enableLTC">
+          <input type="checkbox" id="enableLTC" checked />
+          <span class="module-title">🦽 納入「長期照顧準備金」規劃</span>
+        </label>
+        <div>
+          <div class="form-group">
+            <label>每月看護/機構預算（今日現值）</label>
+            <input type="number" id="ltcMonthly" value="40000" step="5000" />
+          </div>
+          <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 8px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>長照年限選單</label>
+              <select id="ltcPresetSelect">
+                <option value="3">輕度照護（3 年）</option>
+                <option value="7.5" selected>國人平均（7.5 年）</option>
+                <option value="10">長照常態（10 年）</option>
+                <option value="15">完整照護（15 年）</option>
+                <option value="custom">自訂年數 ✎</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>年數（年）</label>
+              <input type="number" id="ltcYears" value="7.5" min="0.5" max="30" step="0.5" />
+            </div>
+          </div>
+        </div>
+        <div class="hint" id="ltcSummaryHint" style="margin-top: 8px; color: var(--secondary); font-weight: 500;">
+          預估長照總月數：90 個月（7.5 年）
+        </div>
+      </div>
+
+      <!-- 模組 C：醫療重症準備金 -->
+      <div class="module-card" id="cardMed">
+        <label class="module-header" for="enableMed">
+          <input type="checkbox" id="enableMed" checked />
+          <span class="module-title">🏥 納入「醫療重症準備金」規劃</span>
+        </label>
+        <div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>自費高額醫療專款（今日現值）</label>
+            <input type="number" id="medFixed" value="1500000" step="100000" />
+            <div class="hint" style="margin-top: 6px;">因應自費標靶、達文西手術、高額自費醫材與新式療法專款。</div>
+          </div>
+        </div>
+        <div class="hint" style="margin-top: 8px; color: var(--secondary); font-weight: 500;">
+          全額定額備足專款
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 下半部：大型全寬總結儀表板（徹底填滿右下角空白，附複利成長曲線圖） -->
+  <div class="dashboard-full">
+    <div class="card-title">
+      <span>5. 退休前每月定期定額投入試算與資產成長軌跡</span>
+      <span style="font-size: 0.82rem; color: var(--secondary);" id="yearsToInvestBadge">投入期：27 年</span>
+    </div>
+    
+    <div class="dashboard-grid">
+      <!-- 左側：情境按鈕與滑桿控制 -->
+      <div>
         <div style="font-size: 0.86rem; color: var(--muted); margin-bottom: 10px;">
-          點選以下情境卡片或拖曳下方滑桿，即刻套用年化報酬率試算：
+          點選以下情境卡片或拖曳下方滑桿，即刻套用年化報酬率精算：
         </div>
+        
         <div class="scenarios-grid">
           <div class="scenario-box" id="box0" onclick="applyRate(0)">
             <div class="scenario-rate">0% 純儲蓄</div>
@@ -509,10 +509,9 @@
           </div>
         </div>
 
-        <!-- 自選報酬率滑桿 -->
-        <div style="margin-top: 16px; background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid var(--border);">
+        <div style="background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid var(--border);">
           <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; font-weight: 600;">
-            <span>設定定期定額報酬率：<strong id="customRateDisplay" style="color: var(--secondary); font-size: 1rem;">6.0%</strong></span>
+            <span>自訂定期定額報酬率：<strong id="customRateDisplay" style="color: var(--secondary); font-size: 1rem;">6.0%</strong></span>
             <span>每月需定期定額：<strong id="customPmtDisplay" style="color: var(--danger); font-size: 1.15rem;">$0</strong></span>
           </div>
           <input type="range" id="customRateSlider" min="0" max="12" step="0.5" value="6" style="width: 100%; margin-top: 10px; cursor: pointer;" />
@@ -522,12 +521,24 @@
           <strong>※ 全局資產折抵說明：</strong>您目前的既有存款與投資，已按您自訂的報酬率複利滾存至退休年齡折算終值，直接從總資本缺口中扣除，每月需定期定額的負擔大幅減輕！
         </div>
       </div>
+
+      <!-- 右側：資產複利累積趨勢圖（填滿右下角空白） -->
+      <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 10px; padding: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 0.85rem; font-weight: 700; color: var(--primary);">📈 退休前資產複利增長軌跡</span>
+          <span style="font-size: 0.72rem; color: var(--muted);">既有資產 + 定期定額複利</span>
+        </div>
+        <div style="position: relative; height: 210px;">
+          <canvas id="growthLineChart"></canvas>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
   let pieChart = null;
+  let lineChart = null;
 
   function formatMoney(num) {
     return '$' + Math.round(Math.max(0, num)).toLocaleString('zh-TW');
@@ -574,6 +585,9 @@
     const pmtDisplayEl = document.getElementById('customPmtDisplay');
     pmtDisplayEl.innerText = formatMoney(pmtVal) + ' /月';
     pmtDisplayEl.style.color = pmtVal === 0 ? 'var(--success)' : 'var(--danger)';
+
+    // 同步更新右側複利增長折線圖
+    updateGrowthLineChart(pmtVal, rate / 100, yearsToInvest, curAge, retAge);
   }
 
   // 性別切換更新預設平均餘命
@@ -642,10 +656,10 @@
   function calculateAll() {
     syncModuleStyles();
 
-    // 檢查是否開啟「壓力測試：政府年金歸零」
+    // 檢查是否開啟壓力測試
     const isStress = document.getElementById('stressMode').checked;
 
-    // 讀取年齡數值
+    // 讀取年齡
     const curAge = parseFloat(document.getElementById('curAge').value) || 38;
     const retAge = parseFloat(document.getElementById('retAge').value) || 65;
     const lifeExp = parseFloat(document.getElementById('lifeExp').value) || 85;
@@ -667,7 +681,6 @@
     const currInvest = parseFloat(document.getElementById('currInvest').value) || 0;
     const currInvestRate = (parseFloat(document.getElementById('currInvestRate').value) || 0) / 100;
 
-    // 存款終值（按 1.5% 滾存）+ 投資終值（按自選報酬率滾存）
     const savingsFV = currSavings * Math.pow(1 + 0.015, yearsToInvest);
     const investFV = currInvest * Math.pow(1 + currInvestRate, yearsToInvest);
     const totalExistingAssetFV = savingsFV + investFV;
@@ -787,7 +800,6 @@
     const medFixed = parseFloat(document.getElementById('medFixed').value) || 0;
     document.getElementById('lblCapMed').innerText = enableMed ? `醫療重症準備金` : `醫療重症準備金 (未納入)`;
 
-    // 若未勾選，金額直接歸零；若有勾選，計算通膨終值
     const capTour = enableTour ? (tourAnnual * tourYears * infFactor) : 0;
     const capLTC = enableLTC ? (ltcMonthly * 12 * ltcYears * infFactor) : 0;
     const capMed = enableMed ? (medFixed * infFactor) : 0;
@@ -804,7 +816,7 @@
       rawCapitalGap = capDailyGap + totalSpecificFunds;
       document.getElementById('rowSurplusOffset').style.display = 'none';
     } else {
-      // 盈餘折抵專項
+      // 盈餘折抵
       capDailyGap = 0;
       const monthlySurplus = monthlyNetBalance;
       surplusTotalOffset = monthlySurplus * 12 * yearsInRetire;
@@ -818,11 +830,10 @@
       }
     }
 
-    // 既有資產終值直接折抵總缺口
+    // 既有資產終值折抵總缺口
     document.getElementById('valCapAssetOffset').innerText = '-' + formatMoney(totalExistingAssetFV);
     const finalTotalGapCapital = Math.max(0, rawCapitalGap - totalExistingAssetFV);
 
-    // 更新提示卡片
     if (finalTotalGapCapital === 0) {
       document.getElementById('summaryCardBox').classList.add('surplus-active');
       document.getElementById('summaryCardTitle').innerText = '🎉 恭喜！年金與既有資產已完全覆蓋所有退休需求：';
@@ -833,10 +844,10 @@
       document.getElementById('totalGapCapitalHint').innerText = `已扣除年金與既有資產終值 ${formatMoney(totalExistingAssetFV)}，剩餘淨缺口需於退休前定期定額補足。`;
     }
 
-    // 全域保存
+    // 全域保存供滑桿取用
     window._CURRENT_TOTAL_GAP = finalTotalGapCapital;
 
-    // 更新數值顯示
+    // 更新各欄位文字
     document.getElementById('valGovPen').innerText = isStress ? '$0 (模擬歸零)' : formatMoney(govPenMonthly);
     document.getElementById('valGovIns').innerText = isStress ? '$0 (模擬歸零)' : formatMoney(govInsMonthly);
     document.getElementById('valLabIns').innerText = isStress ? '$0 (模擬歸零)' : formatMoney(labInsMonthly);
@@ -888,7 +899,7 @@
     try {
       updatePieChart(capDailyGap, capTour, capLTC, capMed, surplusTotalOffset + totalExistingAssetFV);
     } catch (e) {
-      console.warn("Chart render skipped", e);
+      console.warn("Pie chart error", e);
     }
   }
 
@@ -933,7 +944,98 @@
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } }
+          legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } }
+        }
+      }
+    });
+  }
+
+  // 繪製資產複利增長軌跡折線圖（填滿右下角空白）
+  function updateGrowthLineChart(monthlyPmt, investRate, years, curAge, retAge) {
+    const canvas = document.getElementById('growthLineChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const currSavings = parseFloat(document.getElementById('currSavings').value) || 0;
+    const currInvest = parseFloat(document.getElementById('currInvest').value) || 0;
+    const currInvestRate = (parseFloat(document.getElementById('currInvestRate').value) || 0) / 100;
+    const targetGap = window._CURRENT_TOTAL_GAP || 0;
+
+    const labels = [];
+    const principalSeries = [];
+    const totalAssetSeries = [];
+    const step = Math.max(1, Math.round(years / 5));
+
+    for (let y = 0; y <= years; y += (y === years || y % step === 0 ? 1 : step)) {
+      labels.push(`${Math.round(curAge + y)}歲`);
+      
+      // 既有資產成長
+      const savPart = currSavings * Math.pow(1 + 0.015, y);
+      const invPart = currInvest * Math.pow(1 + currInvestRate, y);
+      
+      // 定期定額投入與複利
+      const nMonths = y * 12;
+      const principalContrib = monthlyPmt * nMonths;
+      let dcaFutureVal = 0;
+      if (investRate === 0) {
+        dcaFutureVal = principalContrib;
+      } else {
+        const rMonth = investRate / 12;
+        dcaFutureVal = monthlyPmt * (Math.pow(1 + rMonth, nMonths) - 1) / rMonth;
+      }
+
+      principalSeries.push(Math.round(currSavings + currInvest + principalContrib));
+      totalAssetSeries.push(Math.round(savPart + invPart + dcaFutureVal));
+      
+      if (y === years) break;
+    }
+
+    if (lineChart) {
+      lineChart.data.labels = labels;
+      lineChart.data.datasets[0].data = principalSeries;
+      lineChart.data.datasets[1].data = totalAssetSeries;
+      lineChart.update();
+      return;
+    }
+
+    lineChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: '累積自存本金',
+            data: principalSeries,
+            borderColor: '#94a3b8',
+            backgroundColor: 'rgba(148, 163, 184, 0.1)',
+            borderDash: [4, 4],
+            fill: false,
+            tension: 0.2
+          },
+          {
+            label: '複利滾存總資產',
+            data: totalAssetSeries,
+            borderColor: '#0284c7',
+            backgroundColor: 'rgba(2, 132, 199, 0.15)',
+            fill: true,
+            tension: 0.3
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } }
+        },
+        scales: {
+          x: { ticks: { font: { size: 9 } } },
+          y: { 
+            ticks: { 
+              font: { size: 9 },
+              callback: function(v) { return '$' + (v / 10000) + '萬'; }
+            } 
+          }
         }
       }
     });
