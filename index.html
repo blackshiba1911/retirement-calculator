@@ -77,7 +77,7 @@
     .result-label { font-size: 0.92rem; font-weight: 500; }
     .result-val { font-size: 1.05rem; font-weight: 700; color: var(--primary); }
 
-    .summary-card { background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 10px; padding: 16px; margin-top: 14px; }
+    .summary-card { background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 10px; padding: 16px; margin-top: 14px; transition: all 0.3s; }
     .summary-card.stress-active { background: #fff1f2; border-color: #fecdd3; }
     .summary-card.surplus-active { background: #f0fdfa; border-color: #99f6e4; }
     .gap-highlight { font-size: 1.6rem; font-weight: 800; margin: 6px 0; }
@@ -120,7 +120,7 @@
 <div class="container">
   <header>
     <h1>台灣跨職域退休金與全方位缺口精算系統</h1>
-    <p>涵蓋三軌年資審核、長照醫療與旅遊專項儲備、現金流盈餘雙向沖抵與定期定額規劃</p>
+    <p>涵蓋三軌年資審核、長照醫療與旅遊專項儲備、高薪資盈餘雙向折抵與定期定額規劃</p>
   </header>
 
   <!-- 官方個人查詢快捷入口（雙軌整併版） -->
@@ -180,7 +180,7 @@
           <input type="checkbox" id="stressMode" />
           <div>
             <div class="stress-label">🔥 壓力測試：假設政府年金（勞保/公保/國保）破產或歸零</div>
-            <div class="stress-desc">模擬第一層確定給付全歸零，僅採計個人名下帶著走的「勞退專戶」，考驗自籌防護力！</div>
+            <div class="stress-desc">模擬第一層確定給付全歸零，僅採計個人名下帶著走的「勞退專戶」，考驗純靠個人累積的防護力！</div>
           </div>
         </label>
 
@@ -213,8 +213,9 @@
           <input type="number" id="labSalary" value="45800" max="45800" step="100" />
         </div>
         <div class="form-group">
-          <label>勞退新制平均月提繳工資</label>
-          <input type="number" id="labPenSalary" value="50000" step="1000" />
+          <label>勞退新制平均月提繳工資（試算可輸入更高薪資）</label>
+          <input type="number" id="labPenSalary" value="50000" step="5000" />
+          <div class="hint">試著調高此金額，多出的退休金將自動扣抵下方的旅遊金、長照金與醫療金！</div>
         </div>
         <div class="form-group">
           <label>勞退提撥率（雇主 6% + 自提 %）</label>
@@ -277,7 +278,7 @@
           <div class="result-val" id="valLabIns">$0</div>
         </div>
         <div class="result-item">
-          <div class="result-label" style="font-weight: 700; color: var(--secondary);">勞工退休金 (勞退個人專戶月領)</div>
+          <div class="result-label" style="font-weight: 700; color: var(--secondary);">勞工退休金 (勞退專戶月領)</div>
           <div class="result-val" id="valLabPen" style="color: var(--secondary);">$0</div>
         </div>
         <div class="result-item">
@@ -285,7 +286,7 @@
           <div class="result-val" id="valNatIns">$0</div>
         </div>
         <div class="result-item" style="background:#f1f5f9; padding: 10px 8px; border-radius: 6px; margin-top: 8px;">
-          <div class="result-label" style="font-weight: 700; color: var(--primary);">每月年金收入合計</div>
+          <div class="result-label" style="font-weight: 700; color: var(--primary);" id="lblTotalMonthly">每月年金收入合計</div>
           <div class="result-val" style="color: var(--primary);" id="valTotalMonthly">$0</div>
         </div>
         <div class="result-item" style="padding-top: 10px;">
@@ -314,9 +315,9 @@
           <div class="result-val" id="valCapMed">$0</div>
         </div>
         <!-- 顯示多餘年金扣抵專項金的項目 -->
-        <div class="result-item" id="rowSurplusOffset" style="display: none; background: #ecfdf5; padding: 6px 8px; border-radius: 4px;">
-          <div class="result-label" style="color: var(--success); font-weight: 600;">💎 退休年金終身盈餘總額（折抵專項金）</div>
-          <div class="result-val" id="valCapSurplusOffset" style="color: var(--success);">-$0</div>
+        <div class="result-item" id="rowSurplusOffset" style="display: none; background: #ecfdf5; padding: 8px 10px; border-radius: 6px; margin-top: 6px;">
+          <div class="result-label" style="color: var(--success); font-weight: 700;">💎 年金每月盈餘終身折抵額（抵扣專項）</div>
+          <div class="result-val" id="valCapSurplusOffset" style="color: var(--success); font-weight: 800;">-$0</div>
         </div>
 
         <div class="summary-card" id="summaryCardBox">
@@ -423,8 +424,8 @@
     const retAge = parseFloat(document.getElementById('retAge').value) || 65;
     const yearsToInvest = Math.max(1, retAge - curAge);
     
-    // 取得即時淨總缺口
-    const totalGap = parseFloat(document.getElementById('valTotalGapCapital').getAttribute('data-val')) || 0;
+    // 從 DOM 屬性讀取目前真實的淨總缺口（浮點數）
+    const totalGap = window._CURRENT_TOTAL_GAP || 0;
     const pmtVal = calcPMT(totalGap, rate / 100, yearsToInvest);
     
     const pmtDisplayEl = document.getElementById('customPmtDisplay');
@@ -505,13 +506,14 @@
     // --- 4. 勞退新制個人專戶（屬於個人私產）---
     let labPenMonthly = 0;
     if (yLab >= 15) {
+      // 年金終值複利精算：年化 3%，每年投入 (月薪 * 提撥率 * 12)
       const annualContrib = sLabPen * rateLabPen * 12;
-      let totalFund = 0;
-      for (let i = 0; i < yLab; i++) {
-        totalFund = (totalFund + annualContrib) * 1.03;
-      }
+      const r = 0.03;
+      // 等比級數終值公式：S = PMT * [ (1+r)^N - 1 ] / r
+      const totalFund = annualContrib * (Math.pow(1 + r, yLab) - 1) / r;
+      // 內政部生命表除數折算月領
       labPenMonthly = totalFund / (21.39 * 12);
-      qualLogs.push(`✓ 勞退個人專戶：個人獨立專戶累積，滿 15 年按月分配請領。`);
+      qualLogs.push(`✓ 勞退個人專戶：累計滿 15 年，月提繳 ${formatMoney(sLabPen * rateLabPen)}，65歲起月領約 ${formatMoney(labPenMonthly)}。`);
     } else if (yLab > 0) {
       labPenMonthly = 0;
       qualLogs.push(`✕ 勞退個人專戶：未滿 15 年僅能一次結清，不計入每月固定年金。`);
@@ -566,17 +568,18 @@
       const monthlyDeficit = Math.abs(monthlyNetBalance);
       capDailyGap = monthlyDeficit * 12 * yearsInRetire;
       totalGapCapital = capDailyGap + totalSpecificFunds;
+      
       document.getElementById('rowSurplusOffset').style.display = 'none';
       document.getElementById('summaryCardBox').classList.remove('surplus-active');
       document.getElementById('summaryCardTitle').innerText = isStress ? '🔥 零政府年金！全額自籌總淨缺口：' : '退休應備總資本淨缺口：';
-      document.getElementById('totalGapCapitalHint').innerText = '包含日常開銷赤字與專項儲備金，需於退休前備齊。';
+      document.getElementById('totalGapCapitalHint').innerText = '包含日常開銷赤字與三大專項儲備金，需於退休前備齊。';
     } else {
       // 情況 B：年金大於基本生活費（存在每月盈餘！）
       capDailyGap = 0; // 日常開銷已無缺口
       const monthlySurplus = monthlyNetBalance;
-      surplusTotalOffset = monthlySurplus * 12 * yearsInRetire; // 退休期間多領的年金總資本
+      surplusTotalOffset = monthlySurplus * 12 * yearsInRetire; // 退休期間多領的年金終身總資本
       
-      // 盈餘自動沖抵三大專項金
+      // 盈餘自動扣抵三大專項金
       totalGapCapital = Math.max(0, totalSpecificFunds - surplusTotalOffset);
 
       document.getElementById('rowSurplusOffset').style.display = 'flex';
@@ -584,17 +587,17 @@
       
       if (totalGapCapital === 0) {
         document.getElementById('summaryCardBox').classList.add('surplus-active');
-        document.getElementById('summaryCardTitle').innerText = '🎉 恭喜！退休年金已完全覆蓋所有生活與專項開銷：';
-        document.getElementById('totalGapCapitalHint').innerText = `每月年金盈餘 ${formatMoney(monthlySurplus)} 換算終身累積達 ${formatMoney(surplusTotalOffset)}，已完全吸收旅遊、長照與醫療準備金，退休淨缺口為 $0！`;
+        document.getElementById('summaryCardTitle').innerText = '🎉 恭喜！高薪資與年金已完全覆蓋生活與專項開銷：';
+        document.getElementById('totalGapCapitalHint').innerText = `每月年金盈餘 ${formatMoney(monthlySurplus)} 換算終身累積達 ${formatMoney(surplusTotalOffset)}，已完全吸收旅遊、長照與醫療準備金，退休淨缺口降為 $0！`;
       } else {
         document.getElementById('summaryCardBox').classList.remove('surplus-active');
-        document.getElementById('summaryCardTitle').innerText = '退休應備總資本淨缺口（已扣除年金盈餘折抵）：';
-        document.getElementById('totalGapCapitalHint').innerText = `多出的每月年金盈餘 ${formatMoney(monthlySurplus)} 已為您抵減 ${formatMoney(surplusTotalOffset)} 的專項需求，剩餘淨缺口大幅縮小！`;
+        document.getElementById('summaryCardTitle').innerText = '退休應備總資本淨缺口（已由薪資年金盈餘折抵）：';
+        document.getElementById('totalGapCapitalHint').innerText = `每月多出的年金盈餘 ${formatMoney(monthlySurplus)} 已為您抵扣 ${formatMoney(surplusTotalOffset)} 的專項需求，剩餘淨缺口顯著縮小！`;
       }
     }
 
-    // 存入 data 屬性供滑桿計算
-    document.getElementById('valTotalGapCapital').setAttribute('data-val', totalGapCapital);
+    // 全域保存供滑桿與情境按鈕取用
+    window._CURRENT_TOTAL_GAP = totalGapCapital;
 
     // 更新畫面文字
     document.getElementById('valGovPen').innerText = isStress ? '$0 (模擬歸零)' : formatMoney(govPenMonthly);
@@ -614,7 +617,7 @@
       elMGap.innerText = '-' + formatMoney(Math.abs(monthlyNetBalance)) + ' /月 (赤字)';
       elMGap.style.color = 'var(--danger)';
     } else {
-      elMGap.innerText = '+' + formatMoney(monthlyNetBalance) + ' /月 (盈餘可抵專項)';
+      elMGap.innerText = '+' + formatMoney(monthlyNetBalance) + ' /月 (盈餘已抵專項)';
       elMGap.style.color = 'var(--success)';
     }
 
@@ -640,14 +643,20 @@
     // 審核日誌清單
     document.getElementById('qualCheckList').innerHTML = qualLogs.map(item => `<div>${item}</div>`).join('');
 
-    // 更新圓餅圖
-    updatePieChart(capDailyGap, capTour, capLTC, capMed, surplusTotalOffset);
+    // 安全更新圓餅圖
+    try {
+      updatePieChart(capDailyGap, capTour, capLTC, capMed, surplusTotalOffset);
+    } catch (e) {
+      console.warn("Chart render skipped", e);
+    }
   }
 
   function updatePieChart(daily, tour, ltc, med, offset) {
-    const ctx = document.getElementById('gapPieChart').getContext('2d');
+    const canvas = document.getElementById('gapPieChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
     
-    // 如果有盈餘折抵，按比例動態折算圖表呈現
+    // 如果有盈餘折抵，按順序動態折算圖表呈現
     let adjTour = tour;
     let adjLTC = ltc;
     let adjMed = med;
@@ -698,6 +707,7 @@
   document.querySelectorAll('input, select').forEach(el => {
     if (el.id !== 'customRateSlider') {
       el.addEventListener('input', calculateAll);
+      el.addEventListener('change', calculateAll);
     }
   });
 
