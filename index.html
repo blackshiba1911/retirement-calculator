@@ -37,6 +37,25 @@
     .portal-btn-title { font-size: 0.95rem; font-weight: 700; color: var(--secondary); display: flex; align-items: center; gap: 6px; }
     .portal-btn-desc { font-size: 0.78rem; color: var(--muted); margin-top: 5px; line-height: 1.4; }
 
+    /* 壓力測試開關卡片 */
+    .stress-box {
+      background: #fef2f2;
+      border: 2px dashed #fca5a5;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+    }
+    .stress-box:hover { background: #fee2e2; }
+    .stress-box input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--danger); }
+    .stress-label { font-size: 0.95rem; font-weight: 700; color: #991b1b; }
+    .stress-desc { font-size: 0.76rem; color: #b91c1c; margin-top: 3px; }
+
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     @media (max-width: 960px) { .grid { grid-template-columns: 1fr; } }
     
@@ -51,6 +70,7 @@
 
     .status-badge { font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; font-weight: bold; }
     .badge-pass { background: #dcfce7; color: var(--success); }
+    .badge-stress { background: #fee2e2; color: var(--danger); }
 
     .result-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px dashed var(--border); }
     .result-item:last-child { border-bottom: none; }
@@ -58,6 +78,7 @@
     .result-val { font-size: 1.05rem; font-weight: 700; color: var(--primary); }
 
     .summary-card { background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 10px; padding: 16px; margin-top: 14px; }
+    .summary-card.stress-active { background: #fff1f2; border-color: #fecdd3; }
     .gap-highlight { font-size: 1.6rem; font-weight: 800; margin: 6px 0; }
     .gap-red { color: var(--danger); }
     .gap-green { color: var(--success); }
@@ -98,7 +119,7 @@
 <div class="container">
   <header>
     <h1>台灣跨職域退休金與全方位缺口精算系統</h1>
-    <p>涵蓋三軌年資審核、長照醫療與旅遊專項儲備、定期定額複利規劃</p>
+    <p>涵蓋三軌年資審核、長照醫療與旅遊專項儲備、破產壓力測試與定期定額複利規劃</p>
   </header>
 
   <!-- 官方個人查詢快捷入口（雙軌整併版） -->
@@ -149,21 +170,31 @@
         </div>
       </div>
 
-      <!-- 2. 職涯年資盤點 -->
+      <!-- 2. 職涯年資盤點與壓力測試開關 -->
       <div class="card">
-        <div class="card-title">2. 跨職域各軌年資（年）</div>
+        <div class="card-title">2. 跨職域各軌年資盤點</div>
+        
+        <!-- 勞保/政府年金破產極限自籌開關 -->
+        <label class="stress-box" for="stressMode">
+          <input type="checkbox" id="stressMode" />
+          <div>
+            <div class="stress-label">🔥 壓力測試：假設政府年金（勞保/公保/國保）破產或歸零</div>
+            <div class="stress-desc">模擬第一層確定給付全歸零，僅保留個人名下帶著走的「勞退新制專戶」，考驗純靠自己存退休金的缺口！</div>
+          </div>
+        </label>
+
         <div class="form-group">
-          <label>公立學校 / 公務人員年資</label>
+          <label>公立學校 / 公務人員年資（年）</label>
           <input type="number" id="yearsGov" value="10" min="0" max="45" step="0.5" />
           <div class="hint">未滿 5 年離職無法保留月退資格；滿 5 年可於 65 歲併計請領。</div>
         </div>
         <div class="form-group">
-          <label>待業 / 育嬰停薪（國民年金）年資</label>
+          <label>待業 / 育嬰停薪（國民年金）年資（年）</label>
           <input type="number" id="yearsNat" value="2" min="0" max="45" step="0.5" />
           <div class="hint">未投保職域保險時之空窗年資，滿 65 歲起支。</div>
         </div>
         <div class="form-group">
-          <label>補習班 / 民間受僱（勞保＋勞退）年資</label>
+          <label>補習班 / 民間受僱（勞保＋勞退）年資（年）</label>
           <input type="number" id="yearsLab" value="18" min="0" max="45" step="0.5" />
           <div class="hint">勞保原則需滿 15 年，或與國保合計滿 15 年始可月領。</div>
         </div>
@@ -224,7 +255,7 @@
       <div class="card">
         <div class="card-title">
           <span>年資請領資格判定</span>
-          <span class="status-badge badge-pass">法令審核完成</span>
+          <span class="status-badge" id="overallStatusBadge">法令審核完成</span>
         </div>
         <div id="qualCheckList" style="font-size: 0.85rem; line-height: 1.6;"></div>
       </div>
@@ -233,27 +264,27 @@
       <div class="card">
         <div class="card-title">每月法定退休年金推估 (65歲起支)</div>
         <div class="result-item">
-          <div class="result-label">公教退撫月退休金</div>
+          <div class="result-label" id="lblGovPen">公教退撫月退休金</div>
           <div class="result-val" id="valGovPen">$0</div>
         </div>
         <div class="result-item">
-          <div class="result-label">公保養老年金</div>
+          <div class="result-label" id="lblGovIns">公保養老年金</div>
           <div class="result-val" id="valGovIns">$0</div>
         </div>
         <div class="result-item">
-          <div class="result-label">勞保老年年金 (第1/2式擇優)</div>
+          <div class="result-label" id="lblLabIns">勞保老年年金 (第1/2式擇優)</div>
           <div class="result-val" id="valLabIns">$0</div>
         </div>
         <div class="result-item">
-          <div class="result-label">勞工退休金 (勞退新制專戶月領)</div>
-          <div class="result-val" id="valLabPen">$0</div>
+          <div class="result-label" style="font-weight: 700; color: var(--secondary);">勞工退休金 (勞退個人專戶月領)</div>
+          <div class="result-val" id="valLabPen" style="color: var(--secondary);">$0</div>
         </div>
         <div class="result-item">
-          <div class="result-label">國民年金老年年金 (B式)</div>
+          <div class="result-label" id="lblNatIns">國民年金老年年金 (B式)</div>
           <div class="result-val" id="valNatIns">$0</div>
         </div>
         <div class="result-item" style="background:#f1f5f9; padding: 10px 8px; border-radius: 6px; margin-top: 8px;">
-          <div class="result-label" style="font-weight: 700; color: var(--primary);">每月法定年金合計</div>
+          <div class="result-label" style="font-weight: 700; color: var(--primary);" id="lblTotalMonthly">每月年金收入合計</div>
           <div class="result-val" style="color: var(--primary);" id="valTotalMonthly">$0</div>
         </div>
         <div class="result-item" style="padding-top: 10px;">
@@ -282,10 +313,10 @@
           <div class="result-val" id="valCapMed">$0</div>
         </div>
 
-        <div class="summary-card">
-          <div style="font-size: 0.9rem; font-weight: 600; color: var(--text);">退休應備總資本淨缺口：</div>
+        <div class="summary-card" id="summaryCardBox">
+          <div style="font-size: 0.9rem; font-weight: 600; color: var(--text);" id="summaryCardTitle">退休應備總資本淨缺口：</div>
           <div class="gap-highlight gap-red" id="valTotalGapCapital">$0</div>
-          <div class="hint" id="totalGapCapitalHint">扣除法定退休金後，需於退休前透過自主理財補足之總額。</div>
+          <div class="hint" id="totalGapCapitalHint">扣除現行年金後，需於退休前透過自主理財補足之總額。</div>
         </div>
 
         <!-- 缺口分佈圓餅圖 -->
@@ -336,7 +367,7 @@
         </div>
 
         <div class="rule-note">
-          <strong>※ 計算說明：</strong>採用標準金融年金終值公式（PMT）精算。年資未達標者（公教未滿 5 年或勞保併計不足 15 年）系統已自動將對應月年金歸零。
+          <strong>※ 計算說明：</strong>採用標準金融年金終值公式（PMT）精算。開啟壓力測試時，第一層確定給付社會保險歸零，真實呈現完全靠個人累積帳戶之理財防護力。
         </div>
       </div>
     </div>
@@ -401,6 +432,9 @@
   });
 
   function calculateAll() {
+    // 檢查是否開啟「壓力測試：政府年金歸零」
+    const isStress = document.getElementById('stressMode').checked;
+
     // 讀取年齡數值
     const curAge = parseFloat(document.getElementById('curAge').value) || 38;
     const retAge = parseFloat(document.getElementById('retAge').value) || 65;
@@ -426,26 +460,26 @@
 
     let qualLogs = [];
 
-    // 1. 公教退撫月退
+    // --- 1. 公教退撫月退 ---
     let govPenMonthly = 0;
     if (yGov >= 5 && totalYears >= 15) {
       govPenMonthly = (sGov * 2) * (yGov * 0.015);
-      qualLogs.push(`✓ 公教退撫：任職 ${yGov} 年（滿5年可保留）且跨職域合併滿 15 年，具月退資格。`);
+      qualLogs.push(`✓ 公教退撫：任職 ${yGov} 年且合併滿 15 年，具月退資格。`);
     } else if (yGov > 0 && yGov < 5) {
       govPenMonthly = 0;
-      qualLogs.push(`✕ 公教退撫：未滿 5 年無法保留月退資格，按規定歸零。`);
+      qualLogs.push(`✕ 公教退撫：未滿 5 年無法保留月退資格，歸零。`);
     } else if (yGov >= 5 && totalYears < 15) {
       govPenMonthly = 0;
-      qualLogs.push(`✕ 公教退撫：滿 5 年但跨職域合計未達 15 年門檻，無法領取月退。`);
+      qualLogs.push(`✕ 公教退撫：滿 5 年但合計不足 15 年，無法請領月退。`);
     }
 
-    // 2. 公保養老年金
+    // --- 2. 公保養老年金 ---
     let govInsMonthly = 0;
     if (yGov >= 5) {
       govInsMonthly = sGov * yGov * 0.0075;
     }
 
-    // 3. 勞保老年年金
+    // --- 3. 勞保老年年金 ---
     let labInsMonthly = 0;
     if (yLab >= 15 || (yLab > 0 && (yLab + yNat) >= 15)) {
       const type1 = (sLab * yLab * 0.00775) + 3000;
@@ -454,10 +488,10 @@
       qualLogs.push(`✓ 勞保老年年金：年資達標，採第1式與第2式擇優給付。`);
     } else if (yLab > 0) {
       labInsMonthly = 0;
-      qualLogs.push(`✕ 勞保年金：勞保年資未滿 15 年且併計國保亦未達標，無法按月請領。`);
+      qualLogs.push(`✕ 勞保年金：勞保未滿 15 年且併計國保亦未達標，無法按月請領。`);
     }
 
-    // 4. 勞退新制專戶月領
+    // --- 4. 勞退新制個人專戶（屬於個人私產，不受政府破產影響）---
     let labPenMonthly = 0;
     if (yLab >= 15) {
       const annualContrib = sLabPen * rateLabPen * 12;
@@ -466,17 +500,37 @@
         totalFund = (totalFund + annualContrib) * 1.03;
       }
       labPenMonthly = totalFund / (21.39 * 12);
-      qualLogs.push(`✓ 勞退個人專戶：累計滿 15 年，得以個人專戶基金按月分配請領。`);
+      qualLogs.push(`✓ 勞退個人專戶：個人獨立專戶累積，不受政府破產影響，滿 15 年按月分配請領。`);
     } else if (yLab > 0) {
       labPenMonthly = 0;
-      qualLogs.push(`✕ 勞退個人專戶：提繳未滿 15 年，依法僅能一次結清，不計入每月固定年金。`);
+      qualLogs.push(`✕ 勞退個人專戶：未滿 15 年僅能一次結清，不計入每月固定年金。`);
     }
 
-    // 5. 國民年金
+    // --- 5. 國民年金 ---
     let natInsMonthly = 0;
     if (yNat > 0) {
       natInsMonthly = 21103 * yNat * 0.013;
-      qualLogs.push(`✓ 國民年金：${yNat} 年年資，因兼領其他職域給付，依法採 B 式計給。`);
+      qualLogs.push(`✓ 國民年金：${yNat} 年空窗年資，依法採 B 式計給。`);
+    }
+
+    // 壓力測試介入：政府第一層社會保險歸零
+    if (isStress) {
+      govPenMonthly = 0;
+      govInsMonthly = 0;
+      labInsMonthly = 0;
+      natInsMonthly = 0;
+      qualLogs.unshift(`⚠️ 【極限壓力測試啟動中】：假設政府勞保、公保與國保全數歸零，僅採計個人名下之「勞退新制專戶」！`);
+      document.getElementById('overallStatusBadge').innerText = '🔥 壓力測試模式 (自籌)';
+      document.getElementById('overallStatusBadge').className = 'status-badge badge-stress';
+      document.getElementById('summaryCardBox').classList.add('stress-active');
+      document.getElementById('summaryCardTitle').innerText = '🔥 零政府年金！全額自籌資本淨缺口：';
+      document.getElementById('totalGapCapitalHint').innerText = '在政府無任何年金給付情況下，您必須 100% 透過自主投資儲蓄達成的總資產目標。';
+    } else {
+      document.getElementById('overallStatusBadge').innerText = '法令審核完成';
+      document.getElementById('overallStatusBadge').className = 'status-badge badge-pass';
+      document.getElementById('summaryCardBox').classList.remove('stress-active');
+      document.getElementById('summaryCardTitle').innerText = '退休應備總資本淨缺口：';
+      document.getElementById('totalGapCapitalHint').innerText = '扣除現行年金後，需於退休前透過自主理財補足之總額。';
     }
 
     // 每月給付與缺口
@@ -494,13 +548,19 @@
     const capMed = medFixed;
     const totalGapCapital = capDailyGap + capTour + capLTC + capMed;
 
-    // 更新數值顯示
-    document.getElementById('valGovPen').innerText = formatMoney(govPenMonthly);
-    document.getElementById('valGovIns').innerText = formatMoney(govInsMonthly);
-    document.getElementById('valLabIns').innerText = formatMoney(labInsMonthly);
+    // 更新畫面數值
+    document.getElementById('valGovPen').innerText = isStress ? '$0 (模擬歸零)' : formatMoney(govPenMonthly);
+    document.getElementById('valGovIns').innerText = isStress ? '$0 (模擬歸零)' : formatMoney(govInsMonthly);
+    document.getElementById('valLabIns').innerText = isStress ? '$0 (模擬歸零)' : formatMoney(labInsMonthly);
     document.getElementById('valLabPen').innerText = formatMoney(labPenMonthly);
-    document.getElementById('valNatIns').innerText = formatMoney(natInsMonthly);
+    document.getElementById('valNatIns').innerText = isStress ? '$0 (模擬歸零)' : formatMoney(natInsMonthly);
     document.getElementById('valTotalMonthly').innerText = formatMoney(totalMonthlyPension);
+
+    // 欄位文字顏色加強提示
+    document.getElementById('valGovPen').style.color = isStress ? '#94a3b8' : 'var(--primary)';
+    document.getElementById('valGovIns').style.color = isStress ? '#94a3b8' : 'var(--primary)';
+    document.getElementById('valLabIns').style.color = isStress ? '#94a3b8' : 'var(--primary)';
+    document.getElementById('valNatIns').style.color = isStress ? '#94a3b8' : 'var(--primary)';
 
     const elMGap = document.getElementById('valMonthlyGap');
     if (monthlyGap > 0) {
