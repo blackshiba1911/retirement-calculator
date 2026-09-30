@@ -120,7 +120,7 @@
 <div class="container">
   <header>
     <h1>台灣跨職域退休金與全方位缺口精算系統</h1>
-    <p>涵蓋三軌年資審核、通膨終值精算、長照醫療旅遊專項儲備、高薪資盈餘雙向折抵與定期定額規劃</p>
+    <p>涵蓋三軌年資審核、長照年限客製、通膨終值精算、高薪資盈餘雙向折抵與定期定額規劃</p>
   </header>
 
   <!-- 官方個人查詢快捷入口（雙軌整併版） -->
@@ -241,7 +241,7 @@
         </div>
       </div>
 
-      <!-- 4. 三大專項儲備金 -->
+      <!-- 4. 三大專項儲備金（長照年限開放自選） -->
       <div class="card">
         <div class="card-title">4. 樂活旅遊、長照與醫療專項儲備（今日現值）</div>
         <div class="form-group">
@@ -249,11 +249,34 @@
           <input type="number" id="tourAnnual" value="150000" step="10000" />
           <div class="hint">設定退休初期活力充沛前 10 年之年度旅遊金。</div>
         </div>
-        <div class="form-group">
-          <label>🦽 長期照顧準備金（每月看護/機構預算）</label>
-          <input type="number" id="ltcMonthly" value="40000" step="5000" />
-          <div class="hint">依衛福部國人不健康餘命平均約 7.5 年計算。</div>
+        
+        <!-- 長照模組升級：月預算 + 年限情境自選 -->
+        <div style="background: #f8fafc; border: 1px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 14px;">
+          <div class="form-group" style="margin-bottom: 10px;">
+            <label>🦽 長期照顧預備月預算（每月機構/看護/耗材費用）</label>
+            <input type="number" id="ltcMonthly" value="40000" step="5000" />
+          </div>
+          <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px; align-items: flex-end;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>長照預估年限情境選擇</label>
+              <select id="ltcPresetSelect">
+                <option value="3">輕度 / 短期照護（3 年）</option>
+                <option value="7.5" selected>衛福部國人平均不健康餘命（7.5 年）</option>
+                <option value="10">失智 / 長期臥床常態（10 年）</option>
+                <option value="15">極限完整照護需求（15 年）</option>
+                <option value="custom">自訂年數 ✎</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>採計年數（年）</label>
+              <input type="number" id="ltcYears" value="7.5" min="0.5" max="30" step="0.5" />
+            </div>
+          </div>
+          <div class="hint" id="ltcSummaryHint" style="margin-top: 6px; color: var(--secondary); font-weight: 500;">
+            預估長照總月數：90 個月
+          </div>
         </div>
+
         <div class="form-group">
           <label>🏥 醫療重症準備金（定額專款總額）</label>
           <input type="number" id="medFixed" value="1500000" step="100000" />
@@ -318,7 +341,7 @@
           <div class="result-val" id="valCapTour">$0</div>
         </div>
         <div class="result-item">
-          <div class="result-label">長期照顧專項金 (7.5年)</div>
+          <div class="result-label" id="lblCapLTC">長期照顧專項金 (7.5年)</div>
           <div class="result-val" id="valCapLTC">$0</div>
         </div>
         <div class="result-item">
@@ -419,7 +442,6 @@
   function updateCustomRateDisplay(rate) {
     document.getElementById('customRateDisplay').innerText = rate.toFixed(1) + '%';
     
-    // 更新卡片選中 active 樣式
     [0, 3, 5, 7].forEach(r => {
       const box = document.getElementById('box' + r);
       if (box) {
@@ -435,7 +457,6 @@
     const retAge = parseFloat(document.getElementById('retAge').value) || 65;
     const yearsToInvest = Math.max(1, retAge - curAge);
     
-    // 從全域變數讀取最新總缺口
     const totalGap = window._CURRENT_TOTAL_GAP || 0;
     const pmtVal = calcPMT(totalGap, rate / 100, yearsToInvest);
     
@@ -454,6 +475,28 @@
     calculateAll();
   });
 
+  // 長照快速情境選單連動
+  document.getElementById('ltcPresetSelect').addEventListener('change', function() {
+    const val = this.value;
+    const ltcYearsInput = document.getElementById('ltcYears');
+    if (val !== 'custom') {
+      ltcYearsInput.value = parseFloat(val);
+    }
+    calculateAll();
+  });
+
+  // 手動修改長照年數時，將下拉選單標示為 custom
+  document.getElementById('ltcYears').addEventListener('input', function() {
+    const curVal = parseFloat(this.value);
+    const presetSelect = document.getElementById('ltcPresetSelect');
+    if ([3, 7.5, 10, 15].includes(curVal)) {
+      presetSelect.value = curVal.toString();
+    } else {
+      presetSelect.value = 'custom';
+    }
+    calculateAll();
+  });
+
   function calculateAll() {
     // 檢查是否開啟「壓力測試：政府年金歸零」
     const isStress = document.getElementById('stressMode').checked;
@@ -468,7 +511,7 @@
 
     // 讀取通膨率
     const infRate = (parseFloat(document.getElementById('inflationRate').value) || 0) / 100;
-    const infFactor = Math.pow(1 + infRate, yearsToInvest); // 退休時點之通膨複利倍數
+    const infFactor = Math.pow(1 + infRate, yearsToInvest);
 
     document.getElementById('inflationFactorText').innerText = `距退休 ${yearsToInvest} 年物價預計膨脹 ${(infFactor).toFixed(2)} 倍`;
     document.getElementById('ageSummaryHint').innerText = 
@@ -485,7 +528,7 @@
     const sLabPen = parseFloat(document.getElementById('labPenSalary').value) || 0;
     const rateLabPen = parseFloat(document.getElementById('labRate').value) || 0.06;
 
-    // 今日現值生活費 -> 經通膨調整後退休時月生活費需求
+    // 生活費通膨折算
     const targetMonthlyToday = parseFloat(document.getElementById('targetCost').value) || 0;
     const targetMonthlyFuture = targetMonthlyToday * infFactor;
 
@@ -525,7 +568,7 @@
       qualLogs.push(`✕ 勞保年金：勞保未滿 15 年且併計國保亦未達標，無法按月請領。`);
     }
 
-    // --- 4. 勞退新制個人專戶（屬於個人私產）---
+    // --- 4. 勞退新制個人專戶 ---
     let labPenMonthly = 0;
     if (yLab >= 15) {
       const annualContrib = sLabPen * rateLabPen * 12;
@@ -545,7 +588,7 @@
       qualLogs.push(`✓ 國民年金：${yNat} 年空窗年資，依法採 B 式計給。`);
     }
 
-    // 壓力測試介入：政府第一層社會保險歸零
+    // 壓力測試介入
     if (isStress) {
       govPenMonthly = 0;
       govInsMonthly = 0;
@@ -565,16 +608,21 @@
     // 每月年金收入合計
     const totalMonthlyPension = govPenMonthly + govInsMonthly + labInsMonthly + labPenMonthly + natInsMonthly;
 
-    // 每月收支餘絀（以通膨後之實質生活費為基準）
+    // 每月收支餘絀
     const monthlyNetBalance = totalMonthlyPension - targetMonthlyFuture;
 
-    // 專項儲備金需求（經通膨膨脹後總額）
+    // 讀取長照自選年數
+    const ltcYears = parseFloat(document.getElementById('ltcYears').value) || 7.5;
+    document.getElementById('ltcSummaryHint').innerText = `預估長照總月數：${Math.round(ltcYears * 12)} 個月（${ltcYears} 年）`;
+    document.getElementById('lblCapLTC').innerText = `長期照顧專項金 (${ltcYears}年)`;
+
+    // 專項儲備金需求（含自選長照年數 + 通膨調整）
     const tourAnnual = parseFloat(document.getElementById('tourAnnual').value) || 0;
     const ltcMonthly = parseFloat(document.getElementById('ltcMonthly').value) || 0;
     const medFixed = parseFloat(document.getElementById('medFixed').value) || 0;
 
     const capTour = (tourAnnual * 10) * infFactor;
-    const capLTC = (ltcMonthly * 12 * 7.5) * infFactor;
+    const capLTC = (ltcMonthly * 12 * ltcYears) * infFactor; // 採用自選年數
     const capMed = medFixed * infFactor;
     const totalSpecificFunds = capTour + capLTC + capMed;
 
@@ -583,7 +631,7 @@
     let surplusTotalOffset = 0;
 
     if (monthlyNetBalance < 0) {
-      // 情況 A：赤字
+      // 赤字
       const monthlyDeficit = Math.abs(monthlyNetBalance);
       capDailyGap = monthlyDeficit * 12 * yearsInRetire;
       totalGapCapital = capDailyGap + totalSpecificFunds;
@@ -591,9 +639,9 @@
       document.getElementById('rowSurplusOffset').style.display = 'none';
       document.getElementById('summaryCardBox').classList.remove('surplus-active');
       document.getElementById('summaryCardTitle').innerText = isStress ? '🔥 零政府年金！全額自籌總淨缺口：' : '退休應備總資本淨缺口：';
-      document.getElementById('totalGapCapitalHint').innerText = '包含日常開銷赤字與三大專項儲備金（已計入通膨），需於退休前備齊。';
+      document.getElementById('totalGapCapitalHint').innerText = '包含日常開銷赤字與三大專項儲備金（已計入通膨與長照自選年限），需於退休前備齊。';
     } else {
-      // 情況 B：盈餘折抵
+      // 盈餘折抵
       capDailyGap = 0;
       const monthlySurplus = monthlyNetBalance;
       surplusTotalOffset = monthlySurplus * 12 * yearsInRetire;
@@ -614,7 +662,7 @@
       }
     }
 
-    // 全域保存供滑桿取用
+    // 全域保存
     window._CURRENT_TOTAL_GAP = totalGapCapital;
 
     // 更新數值顯示
