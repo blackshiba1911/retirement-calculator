@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -1770,7 +1771,7 @@
     calculateAll();
   });
 </script>
-<!-- 理財工具每次強制驗證版 Firebase 通行碼鎖（貼在 </body> 正上方） -->
+<!-- 理財工具智慧同步備援＋每次強制驗證版 Firebase 通行碼鎖（一整包貼在 </body> 正上方） -->
 <div id="fb-lock-overlay" style="position:fixed !important;inset:0 !important;background:#F7F3EE !important;z-index:2147483647 !important;display:flex !important;align-items:center;justify-content:center;padding:20px;font-family:-apple-system,BlinkMacSystemFont,'Noto Sans TC',sans-serif;">
   <div style="background:#FFF;border:1px solid #E2D6C8;border-radius:16px;padding:30px 24px;width:100%;max-width:360px;text-align:center;box-shadow:0 8px 25px rgba(62,51,42,0.08);">
     <h2 style="margin:0 0 8px;color:#3E332A;font-size:1.25rem;">理財規劃工具驗證</h2>
@@ -1795,6 +1796,10 @@
     measurementId: "G-0BN6752G91"
   };
 
+  // 僅在「全新手機從未連過網」且「當下又剛好斷網」時的初始預設碼
+  const INITIAL_DEFAULT_PASS = "1234";
+  const BACKUP_KEY = "finance_synced_backup_pass";
+
   const app = getApps().length ? getApps()[0] : initializeApp(fbConfig);
   const db = getFirestore(app);
   const passDocRef = doc(db, "site_passwords", "global");
@@ -1810,26 +1815,36 @@
       return;
     }
 
+    // 優先讀取手機先前同步過來的最新雲端密碼作為斷網備援
+    let validPass = localStorage.getItem(BACKUP_KEY) || INITIAL_DEFAULT_PASS;
+
     try {
-      const snap = await getDoc(passDocRef);
-      let validPass = "1234"; // 首次啟動預設通行碼
+      // 3 秒內向 Firebase 取得最新主密碼
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 3000));
+      const snap = await Promise.race([getDoc(passDocRef), timeoutPromise]);
+
       if (snap.exists() && snap.data().passcode) {
         validPass = String(snap.data().passcode);
+        // 只要成功連上雲端，自動把最新主密碼同步更新到本機備援庫
+        localStorage.setItem(BACKUP_KEY, validPass);
       } else {
         await setDoc(passDocRef, { passcode: validPass });
-      }
-
-      if (inputPass === validPass) {
-        const overlay = document.getElementById("fb-lock-overlay");
-        if (overlay) overlay.style.setProperty("display", "none", "important");
-      } else {
-        errEl.textContent = "通行碼錯誤，請重新確認";
-        errEl.style.display = "block";
+        localStorage.setItem(BACKUP_KEY, validPass);
       }
     } catch (e) {
-      alert("連線失敗，請確認網路或資料庫規則。");
+      // 斷網或訊號極差時，自動沿用 validPass（即上次連網同步的最新主密碼）
+    }
+
+    // 每次打開網頁都必須手動輸入並核對成功才會放行
+    if (inputPass === validPass) {
+      const overlay = document.getElementById("fb-lock-overlay");
+      if (overlay) overlay.style.setProperty("display", "none", "important");
+    } else {
+      errEl.textContent = "通行碼錯誤，請重新確認";
+      errEl.style.display = "block";
     }
   };
 </script>
+
 </body>
 </html>
